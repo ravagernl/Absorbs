@@ -1,8 +1,9 @@
 local name, ns = ...
+------------------------------------------------------------------------------
 local tinsert = tinsert
 local tremove = tremove
+local tsort = table.sort
 local ipairs = ipairs
-
 ns.shields = {
 	-- Druid Stuff
 	[62606] = true,	-- Savage Defense
@@ -25,7 +26,18 @@ ns.shields = {
 local cache, active = {}, {}
 -- array where key consists of guid and spell id
 ns.activeShields = {}
-
+------------------------------------------------------------------------------
+do
+	local sortFunc = function(a,b)
+		return a.max - a.cur < b.max - b.cur
+	end
+	function ns:SortShields()
+		tsort(active, sortFunc)
+	end
+end
+function ns:IterateShields()
+	return ipairs(active)
+end
 function ns:FindActiveShieldIndexFromGUID(guid, id)
 	for index, tbl in ipairs(active) do
 		if tbl.guid == guid and tbl.id == id then
@@ -65,7 +77,6 @@ function ns:UpdateFromTooltipByGUID(guid, id, amount, absorbType, icon, count, d
 	--self:Debugf('%s is now at %d/%d %s absorb value.', tbl.name, tbl.cur, tbl.max, tbl.absorbType)
 end
 
--- We only update maximums by using the combatlog, 
 function ns:UpdateMax(unit, guid, id, name, type, amount, removed)
 	--self:Debugf('UpdateMax: %q, %q, %q, %q, %q, %q, %q', unit, guid, id, name, type, amount or 0, removed and 'removed' or 'applied or refreshed')
 	if removed then
