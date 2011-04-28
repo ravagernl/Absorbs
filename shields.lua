@@ -85,14 +85,14 @@ function ns:UpdateFromTooltipByGUID(guid, id, amount, absorbType, icon, count, d
 	local tbl = self.activeShields[guid..'_'..id]
 	if not tbl then return end
 	if amount > tbl.max then
-		tbl.max = amount
+		tbl.max = 0 + amount
 	end
-	tbl.cur = amount
-	tbl.absorbType = absorbType:lower()
+	tbl.cur = 0 + amount
+	tbl.absorbType = absorbType and absorbType:lower() or nil
 	tbl.icon = icon
-	tbl.count = count
+	tbl.count = 0 + count
 	tbl.debuffType = debuffType
-	tbl.duration = duration
+	tbl.duration = 0 + duration
 	tbl.expirationTIme = expirationTime
 	--self:Debugf('%s is now at %d/%d %s absorb value.', tbl.name, tbl.cur, tbl.max, tbl.absorbType)
 end
