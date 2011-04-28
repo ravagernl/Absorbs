@@ -112,11 +112,11 @@ function ns:UpdateMax(unit, guid, id, name, type, amount, removed)
 		local tbl = tremove(cache) or {}
 		tbl.unit = unit
 		tbl.guid = guid
-		tbl.id = id
+		tbl.id = 0 + id
 		tbl.name = name
 		tbl.type = type
-		tbl.max = amount
-		tbl.cur = amount
+		tbl.max = 0 + amount
+		tbl.cur = 0 + amount
 		tinsert(active, tbl)
 		self.activeShields[guid..'_'..id] = tbl
 	end
