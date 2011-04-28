@@ -22,6 +22,24 @@ ns.shields = {
 	[7812] = true,	-- Sacrifice (Voidwalker)
 	-- Mage stuff
 	[11426] = true,	-- Ice Barrier
+	[543] = true,	-- Mage Ward
+	
+	-- non class
+	[96988] = true,	-- Stay of Execution (25800 damage)
+	[29719] = true,	-- Greater Shielding (4k damage on shield)
+	[29674] = true, -- Lesser Shielding (1k damage on shield)
+	[57350] = true,	-- Darkmoon Card: Illusion
+	[4077] = true,	-- Ice Deflector
+	[71586] = true,	-- Corroded Skeleton Key (6.4k damage)
+	[96945] = true,	-- Gift of the Greatfather (7.4k damage, winterveil trinket)
+	[97129] = true,	-- Gaze of the Greatfather (8350 damage, winterveil trinket)
+	[31771] = true, -- Runed Fungalcap (440 damage)
+	[91296] = true, -- Corrupted egg shell (4060 damage)
+	[29506] = true, -- The burrowers shell(900 damage)
+	[21956] = true, -- Mark of resolution(500 damage)
+	[55019] = true,	-- Noise Machine (1.1k damage)
+	[32278] = true, -- Greater Warding Shield?? (400 damage)
+	[93745] = true, -- Seed Casing??? (1500 damage)
 }
 -- two dimensional arrays
 -- cache and active are only used to track how many shields there are in total

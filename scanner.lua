@@ -3,8 +3,12 @@ local widgets = ns.widgets or {}
 ------------------------------------------------------------------------------
 local UnitGUID, UnitBuff = UnitGUID, UnitBuff
 ------------------------------------------------------------------------------
-local absorbpattern1 = "Absorbs (%d+) (%a+) damage"
-local absorbpattern2 = "Absorbs (%d+) damage"
+local absorbpattern1 = "Absorbs (%d+)"
+local absorbpattern2 = "Absorbs (%d+) (%a+) damage"
+-- Mana shield
+local absorbpattern3 = "Absorbing up to (%d+)"
+-- Stay of execution
+local absorbpattern4 = "Absorbs up to (%d+)"
 widgets.tooltip = CreateFrame("GameTooltip", name..'AddOnTooltip', UIParent, "GameTooltipTemplate")
 widgets.tooltiptext = _G[name..'AddOnTooltipTextLeft2']
 
@@ -25,10 +29,18 @@ function ns:UpdateFromTooltips()
 		if ns:IsTrackableShield(id) and sourceUnit ~= nil and sourceUnit ~= '' then
 			--self:Debugf('Scanning: %q from %q at index %d', buffname, sourceUnit, i)
 			local text = GetBuffText(sourceUnit, i)
-			local amount, absorbType = text:match(absorbpattern1)
+			local amount, absorbType
+			amount = text:match(absorbpattern1)
 			if not amount then
-				amount = text:match(absorbpattern2)
+				amount, absorbType = text:match(absorbpattern2)
+				if not amount then
+					amount = text:match(absorbpattern3)
+					if not amount then
+						amount = text:match(absorbpattern4)
+					end
+				end
 			end
+			
 			if amount then
 				amount = amount + 0
 				--self:Debugf('Found: text: %q, amount: %q(%s), absorbType: %q', text, amount, type(amount), absorbType or 'nil')
