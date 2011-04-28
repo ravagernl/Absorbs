@@ -19,6 +19,7 @@ ns.shields = {
 	-- Warlock stuff
 	[6229] = true,	-- Shadow Ward
 	[91711] = true,	-- Nether Ward
+	[7812] = true,	-- Sacrifice (Voidwalker)
 	-- Mage stuff
 	[11426] = true,	-- Ice Barrier
 }
