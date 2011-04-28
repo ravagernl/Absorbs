@@ -1,0 +1,11 @@
+## Interface: 40100
+## Title: Absorbs
+## Notes: Simple absorb effect monitor
+## Author: mrruben5
+## Version 0.3
+## OptionalDeps: tekDebug
+
+shields.lua
+bars.lua
+scanner.lua
+core.lua
