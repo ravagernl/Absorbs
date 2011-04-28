@@ -4,6 +4,7 @@ local tinsert = tinsert
 local tremove = tremove
 local tsort = table.sort
 local ipairs = ipairs
+------------------------------------------------------------------------------
 ns.shields = {
 	-- Druid Stuff
 	[62606] = true,	-- Savage Defense
