@@ -98,39 +98,43 @@ do
 	function newBar(width, height)
 		local bar = tremove(availableBars)
 		if not bar then
-			local frame = CreateFrame("Frame", name..'AddOnBar'..i, UIParent)
-			bar = setmetatable(frame, barPrototype_meta)
+			bar = setmetatable(CreateFrame("Frame", name..'AddOnBar'..i, UIParent), barPrototype_meta)
+			bar.widgets = {}
+			bar.widgets.bars = {}
+			bar.widgets.textures = {}
+			bar.widgets.fontstrings = {}
 			
 			local icon = bar:CreateTexture(nil, "LOW")
-			icon:SetPoint("TOPLEFT")
-			icon:SetPoint("BOTTOMLEFT")
-			icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-			frame.icon = icon
-
+			bar.widgets.textures.icon = icon
+			
 			local absorbBar = CreateFrame("StatusBar", name..'AddOnBar'..i..'AbsorbBar', bar)
-			absorbBar:SetPoint("TOPRIGHT")
-			absorbBar:SetPoint("BOTTOMRIGHT")
-			absorbBar:SetStatusBarTexture(texture)
-			hooksecurefunc(absorbBar, "SetValue", setValue)
-			
 			local bg = absorbBar:CreateTexture(nil, "BACKGROUND")
-			bg:SetAllPoints()
-			bg:SetTexture(texture)
+			hooksecurefunc(absorbBar, "SetValue", setValue)			
 			absorbBar.bg = bg			
-			bar.absorbBar = absorbBar
+			bar.widgets.bars.absorbBar = absorbBar
 			
-			local spellText = absorbBar:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmallOutline")
-			spellText:SetPoint("LEFT", absorbBar, 2, 0)
-			bar.spellText = spellText
+			local timerBar = CreateFrame("StatusBar", name..'AddOnBar'..i..'TimerBar', absorbBar)
+			hooksecurefunc(timerBar, "SetValue", setValue)
+			bar.widgets.bars.timerBar = timerBar			
+			
+			-- texts
+			local countText = SetFontString(bar, config.font.path, config.font.size)
+			bar.widgets.fontstrings.countText = countText
+			
+			local spellText = SetFontString(absorbBar, config.font.path, config.font.size)
+			bar.widgets.fontstrings.spellText = spellText
 
-			local name = statusbar:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmallOutline")
-			name:SetPoint("LEFT", statusbar, "LEFT", 2, 0)
-			name:SetPoint("RIGHT", statusbar, "RIGHT", -2, 0)
-			bar.candyBarLabel = name
+			local nameText = SetFontString(absorbBar, config.font.path, config.font.size)
+			bar.widgets.fontstrings.nameText = nameText
+			
+			local absorbText = SetFontString(absorbBar, config.font.path, config.font.size)
+			bar.widgets.fontstrings.absorbText = absorbText
+			
+			bar:Style()		
 			i = i + 1
 		end
-		bar.width = width
-		bar.height = height
+		bar:UpdateSize(width, height)		
+		tinsert(activeBars, bar)
 		return bar
 	end
 end
