@@ -105,23 +105,23 @@ function barPrototype:Delete()
 	self:Hide()
 end
 function barPrototype:SetAbsorbColor(r, g, b)
-	self.widgets.bars.absorbBar:SetStatusBarColor(r, g, b)
-	self.widgets.bars.absorbBar.bg:SetVertexColor(r/2, g/2, b/2)
+	self.widgets.bars.absorb:SetStatusBarColor(r, g, b)
+	self.widgets.textures.absorb:SetVertexColor(r/2, g/2, b/2)
 end
 function barPrototype:SetAbsorbValue()
-	self.widgets.bars.absorbBar:SetValue(self.data.cur)
-	self.widgets.bars.absorbBar:SetMinMaxValues(0, self.data.max)
-	self.widgets.fontstrings.absorbText:SetFormattedText("%d/%d", self.data.cur, self.data.max)
+	self.widgets.bars.absorb:SetMinMaxValues(0, self.data.max)
+	self.widgets.bars.absorb:SetValue(self.data.cur)
+	self.widgets.fontstrings.absorb:SetFormattedText("%d/%d", self.data.cur, self.data.max)
 end
 function barPrototype:SetSpell()
 	self:SetIcon()
-	self.widgets.fontstrings.spellText:SetText(self.data.name)
+	self.widgets.fontstrings.spell:SetText(self.data.name)
 end
 function barPrototype:SetIcon()
 	self.widgets.textures.icon:SetTexture(self.data.icon)
 end
 function barPrototype:SetStackCount()
-	self.widgets.fontstrings.countText:SetText(self.data.count > 1 and self.data.count or '')
+	self.widgets.fontstrings.count:SetText(self.data.count > 1 and self.data.count or '')
 end
 function barPrototype:SetUnit()
 	local unit = self.data.unit
@@ -129,13 +129,13 @@ function barPrototype:SetUnit()
 		local _, class = UnitClass(unit)
 		self:SetAbsorbColor(unpack(colors[class]))
 		if unit == 'player' then
-			self.widgets.fontstrings.nameText:SetText('')
+			self.widgets.fontstrings.name:SetText('')
 		else
 			local colorname = colornames[class]:format(UnitName(unit))
-			self.widgets.fontstrings.nameText:SetText(colorname)
+			self.widgets.fontstrings.name:SetText(colorname)
 		end
 	else
-		self.widgets.fontstrings.nameText:SetText('')
+		self.widgets.fontstrings.name:SetText('')
 	end
 end
 function barPrototype:Style()
@@ -151,10 +151,8 @@ function barPrototype:Style()
 	
 	for _, bar in pairs(self.widgets.bars) do
 		bar:SetStatusBarTexture(config.texture)
-		if bar.bg then
-			bar.bg:SetTexture(config.texture)
-		end
 	end
+	self.widgets.textures.absorb:SetTexture(config.texture)
 end
 function barPrototype:UpdateSize(width, height)
 	self.width, self.height = width, height
@@ -171,9 +169,7 @@ local newBar
 do
 	local function setValue(self, value)
 		local min, max = self:GetMinMaxValues()
-		ns:Debugf('(value - min) / (max - min) = ( %d - %d) / ( %d - %d ) = %d', value, min, max, min, (value - min) / (max - min))
-		
-		--self:GetStatusBarTexture():SetTexCoord(0, (value - min) / (max - min), 0, 1)
+		self:GetStatusBarTexture():SetTexCoord(0, (value - min) / (max - min), 0, 1)
 	end
 	local i = 1
 	function newBar(width, height)
@@ -181,39 +177,45 @@ do
 		if not bar then
 			bar = setmetatable(CreateFrame("Frame", name..'AddOnBar'..i, UIParent), barPrototype_meta)
 			bar.widgets = {}
+			bar.widgets.frames = {}
 			bar.widgets.bars = {}
 			bar.widgets.textures = {}
 			bar.widgets.fontstrings = {}
 			
-			local icon = bar:CreateTexture(nil, "LOW")
+			local iconFrame = CreateFrame("Frame", name..'AddOnBar'..i..'IconFrame', bar)
+			bar.widgets.frames.icon = iconFrame
+			
+			local icon = iconFrame:CreateTexture(nil, "ARTWORK")
 			bar.widgets.textures.icon = icon
 			
-			local absorbBar = CreateFrame("StatusBar", name..'AddOnBar'..i..'AbsorbBar', bar)
-			local bg = absorbBar:CreateTexture(nil, "BACKGROUND")
-			hooksecurefunc(absorbBar, "SetValue", setValue)			
-			absorbBar.bg = bg			
-			bar.widgets.bars.absorbBar = absorbBar
+			local absorb = CreateFrame("StatusBar", name..'AddOnBar'..i..'AbsorbStatusBar', bar)
+			hooksecurefunc(absorb, "SetValue", setValue)
+			bar.widgets.bars.absorb = absorb
 			
-			local timerBar = CreateFrame("StatusBar", name..'AddOnBar'..i..'TimerBar', absorbBar)
-			hooksecurefunc(timerBar, "SetValue", setValue)
-			bar.widgets.bars.timerBar = timerBar			
+			local bg = absorb:CreateTexture(nil, "BACKGROUND")	
+			bar.widgets.textures.absorb = bg
+			
+			local timer = CreateFrame("StatusBar", name..'AddOnBar'..i..'TimerStatusBar', absorbBar)
+			hooksecurefunc(timer, "SetValue", setValue)
+			bar.widgets.bars.timer = timer			
 			
 			-- texts
-			local countText = SetFontString(bar, config.font.path, config.font.size)
-			bar.widgets.fontstrings.countText = countText
+			local count = SetFontString(iconFrame, config.font.path, config.font.size)
+			bar.widgets.fontstrings.count = count
 			
-			local spellText = SetFontString(absorbBar, config.font.path, config.font.size)
-			bar.widgets.fontstrings.spellText = spellText
+			local spell = SetFontString(absorb, config.font.path, config.font.size)
+			bar.widgets.fontstrings.spell = spell
 
-			local nameText = SetFontString(absorbBar, config.font.path, config.font.size)
-			bar.widgets.fontstrings.nameText = nameText
+			local name = SetFontString(absorb, config.font.path, config.font.size)
+			bar.widgets.fontstrings.name = name
 			
-			local absorbText = SetFontString(absorbBar, config.font.path, config.font.size)
-			bar.widgets.fontstrings.absorbText = absorbText
+			local absorb = SetFontString(absorb, config.font.path, config.font.size)
+			bar.widgets.fontstrings.absorb = absorb
 			
 			bar:Style()		
 			i = i + 1
 		end
+		bar.unlocked = false
 		bar:UpdateSize(width, height)		
 		tinsert(activeBars, bar)
 		return bar
@@ -242,7 +244,6 @@ else
 	container:SetSize(config.width, config.height + config.spacing)
 end
 container:SetPoint('CENTER', 0, -200)
-container:SetTemplate()
 
 widgets.container = container
 
@@ -264,6 +265,9 @@ anchor.sbar = sbar
 
 if Tukui then
 	anchor:SetTemplate()
+	if config.tukuishadows then
+		anchor:CreateShadow()
+	end
 	sbar:Point('BOTTOMLEFT', 2, 2)
 	sbar:Point('TOPRIGHT', -2, -2)
 else
@@ -307,15 +311,28 @@ SlashCmdList[name:upper()..'ADDON'] = function()
 		anchor:SetAlpha(1)
 		anchor:SetScript("OnMouseDown", function(self) container:StartMoving() end)
 		anchor:SetScript("OnMouseUp", function(self) container:StopMovingOrSizing() end)
+		local prev = anchor
 		for i = 1, 5 do
 			local bar = activeBars[i] or newBar(config.width, config.height)
 			activeBars[i] = bar
-			if not bar:HasData() then
-				bar:SetData(testObject)
-			end
+			bar:SetData(testObject)
 			bar:SetStackCount()
 			bar:SetAbsorbValue()
 			bar:SetUnlocked()
+			if Tukui then
+				if config.growup then
+					bar:Point('BOTTOM', prev, 'TOP', 0, config.spacing)
+				else
+					bar:Point('TOP', prev, 'BOTTOM', 0, -config.spacing)
+				end
+			else
+				if config.growup then
+					bar:Point('BOTTOM', prev, 'TOP', 0, config.spacing)
+				else
+					bar:Point('TOP', prev, 'BOTTOM', 0, -config.spacing)
+				end
+			end
+			prev = bar
 		end
 		local height = ((config.height + config.spacing) * (#activeBars + 1)) - config.spacing
 		if Tukui then
