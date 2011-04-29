@@ -58,6 +58,21 @@ end
 ------------------------------------------------------------------------------
 function barPrototype:IsData(object)
 	return self.data and object and self.data == object
+local colornames = {}
+local colors = {}
+local function SetColors()
+	for class, c  in pairs(CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS) do
+		colornames[class] = string.format("(|cff%02x%02x%02x%%s|r)", c.r*255, c.g*255, c.b*255)
+		-- because I am lazy and want to use unpack
+		c[1], c[2], c[3] = c.r, c.g, c.b
+		colors[class] = c
+	end
+end
+SetColors()
+if CUSTOM_CLASS_COLORS then 
+	CUSTOM_CLASS_COLORS:RegisterCallback(SetColors)
+end
+SetColors = nil
 end
 function barPrototype:SetData(object)
 	self.data = object
