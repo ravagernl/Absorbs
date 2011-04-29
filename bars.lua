@@ -1,5 +1,4 @@
 -- The bar setup procedure is totally unfinished :)
-
 local name, ns = ...
 ns.widgets = ns.widgets or {}
 local widgets = ns.widgets
