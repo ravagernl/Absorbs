@@ -8,7 +8,7 @@ local wipe = wipe
 local _
 local UnitGUID = UnitGUID
 ------------------------------------------------------------------------------
-local evtframe = CreateFrame("Frame", name..'Frame')
+local evtframe = CreateFrame("Frame", name..'EventFrame')
 widgets.eventframe = evtframe
 ------------------------------------------------------------------------------
 local function GUIDToUnitID(guid)
@@ -118,4 +118,4 @@ evtframe:SetScript("OnEvent", function(self, event, timestamp, type, hideCaster,
 	end
 end)
 
-_G[name..'AddOn'] = ns
+_G[name..'AddOnFrame'] = ns
