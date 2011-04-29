@@ -54,11 +54,10 @@ do
 		end
 	end
 end
-local function SetFontString(parent, fontName, fontHeight, justify)
+local function SetFontString(parent, fontName, fontHeight)
 	local fontStyle = fontHeight == 8 and "MONOCHROME,OUTLINE" or "OUTLINE"
 	local fs = parent:CreateFontString(nil, "OVERLAY")
 	fs:SetFont(fontName, fontHeight, fontStyle)
-	fs:SetJustifyH(justify or "LEFT")
 	fs:SetShadowColor(0, 0, 0, 0)
 	fs:SetShadowOffset(0, 0)
 
