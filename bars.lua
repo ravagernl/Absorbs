@@ -62,9 +62,11 @@ local function SetFontString(parent, fontName, fontHeight, justify)
 
 	return fs
 end
+local backdrop = {
+	bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+	insets = { left = -1, right = -1, top = -1, bottom = -1}
+}
 ------------------------------------------------------------------------------
-function barPrototype:IsData(object)
-	return self.data and object and self.data == object
 local colornames = {}
 local colors = {}
 local function SetColors()
@@ -80,26 +82,100 @@ if CUSTOM_CLASS_COLORS then
 	CUSTOM_CLASS_COLORS:RegisterCallback(SetColors)
 end
 SetColors = nil
+------------------------------------------------------------------------------
+function barPrototype:HasData()
+	return self.data and true
 end
 function barPrototype:SetData(object)
-	self.data = object
+	if not (self.data and object and self.data == object) then
+		self.data = object
+		self:SetSpell()
+		self:SetUnit()
+		return true
+	end
+	return false
+end
+function barPrototype:SetUnlocked()
+	self.unlocked = true
+end
+function barPrototype:SetLocked()
+	self.unlocked = false
+end
+function barPrototype:Delete()
+	self.data = nil
+	tinsert(availableBars, self)
+	self:Hide()
 end
 function barPrototype:SetAbsorbColor(r, g, b)
-	self.absorbBar:SetStatusBarColor(r, g, b)
-	self.absorbBar.bg:SetVertexColor(r/2, g/2, b/2)
+	self.widgets.bars.absorbBar:SetStatusBarColor(r, g, b)
+	self.widgets.bars.absorbBar.bg:SetVertexColor(r/2, g/2, b/2)
 end
-function barPrototype:UpdateAbsorbValue() end
-function barPrototype:SetTimerColor(r,g,b) end
-function barPrototype:SetIcon(iconTexture)
-	self.icon:SetTexture(iconTexture)
+function barPrototype:SetAbsorbValue()
+	self.widgets.bars.absorbBar:SetValue(self.data.cur)
+	self.widgets.bars.absorbBar:SetMinMaxValues(0, self.data.max)
+	self.widgets.fontstrings.absorbText:SetFormattedText("%d/%d", self.data.cur, self.data.max)
 end
-function barPrototype:SetStackCount(count) end
-
+function barPrototype:SetSpell()
+	self:SetIcon()
+	self.widgets.fontstrings.spellText:SetText(self.data.name)
+end
+function barPrototype:SetIcon()
+	self.widgets.textures.icon:SetTexture(self.data.icon)
+end
+function barPrototype:SetStackCount()
+	self.widgets.fontstrings.countText:SetText(self.data.count > 1 and self.data.count or '')
+end
+function barPrototype:SetUnit()
+	local unit = self.data.unit
+	if unit and unit ~= '' then
+		local _, class = UnitClass(unit)
+		self:SetAbsorbColor(unpack(colors[class]))
+		if unit == 'player' then
+			self.widgets.fontstrings.nameText:SetText('')
+		else
+			local colorname = colornames[class]:format(UnitName(unit))
+			self.widgets.fontstrings.nameText:SetText(colorname)
+		end
+	else
+		self.widgets.fontstrings.nameText:SetText('')
+	end
+end
+function barPrototype:Style()
+	if Tukui then
+		self:SetTemplate()
+		if config.tukuishadows then
+			self:CreateShadow()
+		end
+	else
+		self:SetBackdrop(backdrop)
+		self:SetBackdropColor(0,0,0,1)
+	end
+	
+	for _, bar in pairs(self.widgets.bars) do
+		bar:SetStatusBarTexture(config.texture)
+		if bar.bg then
+			bar.bg:SetTexture(config.texture)
+		end
+	end
+end
+function barPrototype:UpdateSize(width, height)
+	self.width, self.height = width, height
+	if Tukui then
+		self:Size(self.width, self.height)
+	else
+		self:SetSize(self.width, self.height)
+	end
+end
+------------------------------------------------------------------------------
+widgets.barPrototype = barPrototype
+------------------------------------------------------------------------------
 local newBar
 do
 	local function setValue(self, value)
 		local min, max = self:GetMinMaxValues()
-		self:GetStatusBarTexture():SetTexCoord(0, (value - min) / (max - min), 0, 1)
+		ns:Debugf('(value - min) / (max - min) = ( %d - %d) / ( %d - %d ) = %d', value, min, max, min, (value - min) / (max - min))
+		
+		--self:GetStatusBarTexture():SetTexCoord(0, (value - min) / (max - min), 0, 1)
 	end
 	local i = 1
 	function newBar(width, height)
@@ -146,9 +222,118 @@ do
 	end
 end
 ------------------------------------------------------------------------------
+local container
+local move = false
 function ns:UpdateAllBars()
+	if move then return end
 	self:SortShields()
 	--for i, tbl in ns:IterateShields() do
 	--	self:Debugf('%d: %s', i, tbl.name)
 	--end
+	
+	--bar:SetUnlocked(true)
+end
+
+-- code for moving the frames :)
+container = CreateFrame('Frame', name..'AddOnContainerFrame', UIParent)
+container:SetClampedToScreen(true)
+container:SetMovable(true)
+if Tukui then
+	container:Size(config.width, config.height + config.spacing)
+else
+	container:SetSize(config.width, config.height + config.spacing)
+end
+container:SetPoint('CENTER', 0, -200)
+container:SetTemplate()
+
+widgets.container = container
+
+local anchor = CreateFrame('Frame', name..'AddOnAnchorFrame', container)
+anchor:SetAlpha(0)
+anchor:SetHeight(config.height)
+if not config.growup then
+	anchor:SetPoint('TOPLEFT')
+	anchor:SetPoint('TOPRIGHT')
+else
+	anchor:SetPoint('BOTTOMLEFT')
+	anchor:SetPoint('BOTTOMRIGHT')
+end
+
+local sbar = anchor:CreateTexture(nil, 'ARTWORK')
+sbar:SetTexture(config.texture)
+sbar:SetVertexColor(0,6/16,9/16)
+anchor.sbar = sbar
+
+if Tukui then
+	anchor:SetTemplate()
+	sbar:Point('BOTTOMLEFT', 2, 2)
+	sbar:Point('TOPRIGHT', -2, -2)
+else
+	anchor:SetBackdrop(backdrop)
+	anchor:SetBackdropColor(0,0,0,1)
+	sbar:SetAllPoints()
+end
+
+local text = SetFontString(anchor, config.font.path, config.font.size, 'CENTER')
+text:SetAllPoints()
+text:SetText(name.."AddOn unlocked.")
+anchor.text = text
+widgets.anchor = anchor
+------------------------------------------------------------------------------
+local testObject
+do
+	local name, rank, icon, cost, isFunnel, powerType, castTime, minRange, maxRange = GetSpellInfo(17)
+	testObject = {
+		unit = 'player',
+		guid = UnitGUID('target'),
+		id = 17,
+		name = 'w00p w00p w00p',
+		type = 'BUFF',
+		max = 1600,
+		cur = 1500,
+		absorbType = nil,
+		icon = icon,
+		count = 1,
+		debuffType = debuffType,
+		duration = 15,
+		expirationTime = GetTime() + 10
+	}
+end
+-- slash command
+_G['SLASH_'..name:upper()..'ADDON1'] = "/"..name:lower()
+SlashCmdList[name:upper()..'ADDON'] = function()
+	--if InCombatLockdown() then print(ERR_NOT_IN_COMBAT) return end
+	if not move then
+		move = true
+		anchor:EnableMouse(true)
+		anchor:SetAlpha(1)
+		anchor:SetScript("OnMouseDown", function(self) container:StartMoving() end)
+		anchor:SetScript("OnMouseUp", function(self) container:StopMovingOrSizing() end)
+		for i = 1, 5 do
+			local bar = activeBars[i] or newBar(config.width, config.height)
+			activeBars[i] = bar
+			if not bar:HasData() then
+				bar:SetData(testObject)
+			end
+			bar:SetStackCount()
+			bar:SetAbsorbValue()
+			bar:SetUnlocked()
+		end
+		local height = ((config.height + config.spacing) * (#activeBars + 1)) - config.spacing
+		if Tukui then
+			container:Height(height)
+		else
+			container:SetHeight(height)
+		end
+	else
+		move = false
+		anchor:EnableMouse(false)
+		anchor:SetAlpha(0)
+		for i, bar in ipairs(activeBars) do
+			bar:SetLocked()
+			bar:Delete()
+			activeBars[i] = nil
+		end
+		ns:UpdateAllBars()
+	end
 end
