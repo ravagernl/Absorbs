@@ -2,8 +2,8 @@ local name, ns = ...
 ------------------------------------------------------------------------------
 local debugf = tekDebug and tekDebug:GetFrame(name)
 function ns:Debug(...)
-	if debugf then 
-		debugf:AddMessage(string.join(", ", ...)) 
+	if debugf then
+		debugf:AddMessage(string.join(', ', tostringall(...)))
 	end
 end
 function ns:Debugf(...)
