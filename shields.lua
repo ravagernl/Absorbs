@@ -90,10 +90,10 @@ function ns:UpdateFromTooltipByGUID(guid, id, amount, absorbType, icon, count, d
 	tbl.cur = 0 + amount
 	tbl.absorbType = absorbType and absorbType:lower() or nil
 	tbl.icon = icon
-	tbl.count = 0 + count
+	tbl.count = min(1, 0 + count)
 	tbl.debuffType = debuffType
 	tbl.duration = 0 + duration
-	tbl.expirationTIme = expirationTime
+	tbl.expirationTime = expirationTime
 	--self:Debugf('%s is now at %d/%d %s absorb value.', tbl.name, tbl.cur, tbl.max, tbl.absorbType)
 end
 
