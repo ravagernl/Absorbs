@@ -85,9 +85,6 @@ if CUSTOM_CLASS_COLORS then
 end
 SetColors = nil
 ------------------------------------------------------------------------------
-function barPrototype:HasData()
-	return self.data and true
-end
 function barPrototype:SetData(object)
 	if not (self.data and object and self.data == object) then
 		self.data = object
