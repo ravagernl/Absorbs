@@ -3,7 +3,7 @@
 ## Notes: Simple absorb effect monitor
 ## Author: mrruben5
 ## Version 0.3
-## OptionalDeps: tekDebug
+## OptionalDeps: tekDebug, Tukui, ElvUI, !ClassColors
 
 debug.lua
 config.lua

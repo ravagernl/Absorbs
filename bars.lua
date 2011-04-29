@@ -2,8 +2,23 @@
 local name, ns = ...
 ns.widgets = ns.widgets or {}
 local widgets = ns.widgets
+local config = ns.config
 ------------------------------------------------------------------------------
 local GetTime = GetTime
+local unpack = unpack
+local tinsert, tremove = tinsert, tremove
+local UnitClass, UnitName = UnitClass, UnitName
+------------------------------------------------------------------------------
+-- Native Tukui support
+local Tukui = config.tukuiskinning and (ElvUI or Tukui)
+local T, C, L
+if Tukui then
+	T, C, L = unpack(Tukui)
+	config.font.path = C.media.uffont
+	config.font.style = "THINOUTLINE"
+	config.font.size = T.Duffed and C.unitframes.fontsize or 12
+	config.texture = C.media.normTex
+end
 ------------------------------------------------------------------------------
 -- Partially stolen from LibCandyBar-3.0 and LibBars-1.0 :)
 -- Thank you so much Ammo and Rabbit!
@@ -12,8 +27,9 @@ local barFrame_meta = {__index = dummyFrame}
 local barPrototype = setmetatable({}, barFrame_meta)
 local barPrototype_meta = {__index = barPrototype}
 local availableBars = {}
+local activeBars = {}
 ------------------------------------------------------------------------------
-local texture = [[Interface\TargetingFrame\UI-StatusBar]]
+widgets.activeBars = activeBars
 ------------------------------------------------------------------------------
 local SecondsToTimeDetail
 do
