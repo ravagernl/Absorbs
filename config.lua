@@ -1,7 +1,7 @@
 local config = {
 	height = 24,
 	width = 214,
-	spacing = 4,
+	spacing = 1,
 	growup = true,
 	tukuishadows = true,
 	tukuiskinning = true,
