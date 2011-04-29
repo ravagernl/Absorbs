@@ -59,7 +59,7 @@ function ns:GetShield(i)
 	return active[i]
 end
 function ns:FindActiveShieldIndexFromGUID(guid, id)
-	for index, tbl in ipairs(active) do
+	for index, tbl in next, active do
 		if tbl.guid == guid and tbl.id == id then
 			return index, tbl
 		end

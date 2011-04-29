@@ -344,7 +344,7 @@ SlashCmdList[name:upper()..'ADDON'] = function()
 		move = false
 		anchor:EnableMouse(false)
 		anchor:SetAlpha(0)
-		for i, bar in ipairs(activeBars) do
+		for i, bar in next, activeBars do
 			bar:SetLocked()
 			bar:Delete()
 			activeBars[i] = nil
