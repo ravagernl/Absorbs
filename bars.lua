@@ -1,7 +1,8 @@
 -- The bar setup procedure is totally unfinished :)
 
 local name, ns = ...
-local widgets = ns.widgets or {}
+ns.widgets = ns.widgets or {}
+local widgets = ns.widgets
 ------------------------------------------------------------------------------
 local GetTime = GetTime
 ------------------------------------------------------------------------------
