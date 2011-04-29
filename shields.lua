@@ -55,8 +55,8 @@ do
 		tsort(active, sortFunc)
 	end
 end
-function ns:IterateShields()
-	return ipairs(active)
+function ns:GetShield(i)
+	return active[i]
 end
 function ns:FindActiveShieldIndexFromGUID(guid, id)
 	for index, tbl in ipairs(active) do
