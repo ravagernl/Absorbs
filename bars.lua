@@ -7,7 +7,7 @@ local widgets = ns.widgets
 local GetTime = GetTime
 ------------------------------------------------------------------------------
 -- Partially stolen from LibCandyBar-3.0 and LibBars-1.0 :)
--- Thanks you so much Ammo and Rabbit!
+-- Thank you so much Ammo and Rabbit!
 local dummyFrame = CreateFrame("Frame")
 local barFrame_meta = {__index = dummyFrame}
 local barPrototype = setmetatable({}, barFrame_meta)
