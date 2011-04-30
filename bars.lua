@@ -373,25 +373,6 @@ text:SetText(name.."AddOn unlocked.")
 anchor.text = text
 widgets.anchor = anchor
 ------------------------------------------------------------------------------
-local testObject
-do
-	local name, rank, icon, cost, isFunnel, powerType, castTime, minRange, maxRange = GetSpellInfo(17)
-	testObject = {
-		unit = 'player',
-		guid = UnitGUID('target'),
-		id = 17,
-		name = 'w00p w00p w00p',
-		type = 'BUFF',
-		max = 1600,
-		cur = 1500,
-		absorbType = nil,
-		icon = icon,
-		count = 1,
-		debuffType = debuffType,
-		duration = 15,
-		expirationTime = GetTime() + 10
-	}
-end
 -- slash command
 _G['SLASH_'..name:upper()..'ADDON1'] = "/"..name:lower()
 SlashCmdList[name:upper()..'ADDON'] = function()
@@ -404,7 +385,7 @@ SlashCmdList[name:upper()..'ADDON'] = function()
 		anchor:SetScript("OnMouseUp", function(self) container:StopMovingOrSizing() end)
 		local prev = anchor
 		for i = 1, 5 do
-			local bar = activeBars[i] or newBar(config.width, config.height)
+			local bar = activeBars[i] or newBar(config.height)
 			activeBars[i] = bar
 			bar:SetData(testObject)
 			bar:SetStackCount()
