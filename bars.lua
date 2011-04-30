@@ -207,7 +207,7 @@ do
 		self.widgets.bars.timer:SetValue(.8)
 	end
 end
-function barPrototype:UpdateSize(width, height)
+function barPrototype:UpdateSize(height)
 	if height then
 		self.height = height
 	end
