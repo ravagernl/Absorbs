@@ -31,6 +31,7 @@ local barPrototype_meta = {__index = barPrototype}
 local availableBars = {}
 local activeBars = {}
 ------------------------------------------------------------------------------
+widgets.barPrototype = barPrototype
 widgets.activeBars = activeBars
 ------------------------------------------------------------------------------
 local SecondsToTimeDetail
