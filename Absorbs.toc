@@ -8,6 +8,7 @@
 debug.lua
 config.lua
 shields.lua
+smoothbar.lua
 bars.lua
 scanner.lua
 core.lua
