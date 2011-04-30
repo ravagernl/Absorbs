@@ -143,21 +143,56 @@ function barPrototype:SetUnit()
 		self.widgets.fontstrings.name:SetText('')
 	end
 end
-function barPrototype:Style()
-	if Tukui then
-		self:SetTemplate()
-		if config.tukuishadows then
-			self:CreateShadow()
+do
+	local function OnAbsorbValueChanged(bar, value)
+		ns:Debug(bar, value)
+	end
+	function barPrototype:Style()
+		if Tukui then
+			self:SetTemplate()
+			if config.tukuishadows then
+				self:CreateShadow()
+			end
+		else
+			self:SetBackdrop(backdrop)
+			self:SetBackdropColor(0,0,0,1)
 		end
-	else
-		self:SetBackdrop(backdrop)
-		self:SetBackdropColor(0,0,0,1)
+
+		for _, bar in pairs(self.widgets.bars) do
+			bar:SetStatusBarTexture(config.texture)
+		end
+		self.widgets.textures.absorb:SetTexture(config.texture)
+
+		-- Icon
+		self.widgets.textures.icon:SetTexCoord(0.07,0.93,0.07,0.93)
+		if Tukui then
+			self.widgets.textures.icon:Point('TOPLEFT', self, 2, -2)
+			self.widgets.textures.icon:Point('BOTTOMLEFT', self, 2, 2)
+		else
+			self.widgets.textures.icon:SetPoint('TOPLEFT', self)
+			self.widgets.textures.icon:SetPoint('BOTTOMLEFT', self)
+		end
+
+		-- Absorb
+		self.widgets.textures.absorb:SetAllPoints()
+		if Tukui then
+			self.widgets.bars.absorb:Point('LEFT', 2, 0)
+			self.widgets.bars.absorb:Point('BOTTOM', 0, 2)
+			self.widgets.bars.absorb:Point('RIGHT', -2, 0)
+			self.widgets.bars.absorb:Point('TOP', 0, -2)
+		else
+			self.widgets.bars.absorb:SetAllPoints()
+		end
+		self.widgets.bars.absorb:SetScript('OnValueChanged', OnAbsorbValueChanged)
+		self.widgets.bars.absorb:SetMinMaxValues(0, 1)
+		self.widgets.bars.absorb:SetValue(.8)
+
+		-- timer
+		self.widgets.bars.timer:SetAllPoints(self.widgets.bars.absorb)
+		self.widgets.bars.timer:SetStatusBarColor(unpack(config.timercolor))
+		self.widgets.bars.timer:SetMinMaxValues(0, 1)
+		self.widgets.bars.timer:SetValue(.8)
 	end
-	
-	for _, bar in pairs(self.widgets.bars) do
-		bar:SetStatusBarTexture(config.texture)
-	end
-	self.widgets.textures.absorb:SetTexture(config.texture)
 end
 function barPrototype:UpdateSize(width, height)
 	if width then
