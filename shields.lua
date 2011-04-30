@@ -43,6 +43,10 @@ local shields = {
 	[93745] = true, -- Seed Casing??? (1500 damage)
 }
 ns.shields = shields
+ns.shieldsIndex = {}
+for k, _ in pairs(shields) do
+	tinsert(ns.shieldsIndex, k)
+end
 ------------------------------------------------------------------------------
 -- two dimensional arrays
 -- cache and active are only used to track how many shields there are in total
