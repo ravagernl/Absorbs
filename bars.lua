@@ -101,6 +101,8 @@ function barPrototype:SetLocked()
 	self.unlocked = false
 end
 function barPrototype:Delete()
+	self.widgets.bars.absorb:SetMinMaxValues(0, 1)
+	self.widgets.bars.absorb:SetValue(1)
 	self.widgets.textures.icon:SetTexture()
 	self.data = nil
 	tinsert(availableBars, self)
