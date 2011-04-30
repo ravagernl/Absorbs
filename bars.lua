@@ -6,7 +6,7 @@ local config = ns.config
 ------------------------------------------------------------------------------
 local GetTime = GetTime
 local unpack = unpack
-local tinsert, tremove, wipe = tinsert, tremove, wipe
+local tinsert, tremove, wipe, next = tinsert, tremove, wipe, next
 local UnitClass, UnitName = UnitClass, UnitName
 ------------------------------------------------------------------------------
 -- Native Tukui support

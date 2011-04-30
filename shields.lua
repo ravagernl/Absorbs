@@ -4,8 +4,9 @@ local tinsert = tinsert
 local tremove = tremove
 local tsort = table.sort
 local ipairs = ipairs
+local next = next
 ------------------------------------------------------------------------------
-ns.shields = {
+local shields = {
 	-- Druid Stuff
 	[62606] = true,	-- Savage Defense
 	-- Priest stuff
@@ -41,11 +42,13 @@ ns.shields = {
 	[32278] = true, -- Greater Warding Shield?? (400 damage)
 	[93745] = true, -- Seed Casing??? (1500 damage)
 }
+ns.shields = shields
+------------------------------------------------------------------------------
 -- two dimensional arrays
 -- cache and active are only used to track how many shields there are in total
-local cache, active = {}, {}
+local cache, active, activeShields = {}, {}, {}
 -- array where key consists of guid and spell id
-ns.activeShields = {}
+ns.activeShields = activeShields
 ------------------------------------------------------------------------------
 do
 	local sortFunc = function(a,b)
@@ -74,10 +77,10 @@ function ns:FindActiveShieldIndexFromGUID(guid, id)
 end
 
 function ns:IsTrackableShield(id)
-	return self.shields[id] and 1 or nil
+	return shields[id]
 end
 function ns:UpdateFromTooltipByGUID(guid, id, amount, absorbType, icon, count, debuffType, duration, expirationTime)
-	local tbl = self.activeShields[guid..'_'..id]
+	local tbl = activeShields[guid..'_'..id]
 	if not tbl then return end
 	if amount > tbl.max then
 		tbl.max = 0 + amount
@@ -102,7 +105,7 @@ function ns:UpdateMax(unit, guid, id, name, type, amount, removed)
 		-- Move the table from active to cache
 		tinsert(cache, tbl)
 		active[index] = nil
-		self.activeShields[guid..'_'..id] = nil
+		activeShields[guid..'_'..id] = nil
 	else
 		local tbl = tremove(cache) or {}
 		tbl.unit = unit
@@ -113,7 +116,7 @@ function ns:UpdateMax(unit, guid, id, name, type, amount, removed)
 		tbl.max = 0 + amount
 		tbl.cur = 0 + amount
 		tinsert(active, tbl)
-		self.activeShields[guid..'_'..id] = tbl
+		activeShields[guid..'_'..id] = tbl
 	end
 	ns:UpdateFromTooltips()
 	ns:UpdateAllBars()
