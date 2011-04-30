@@ -1,6 +1,5 @@
 local config = {
 	height = 24,
-	width = 214,
 	width = 260,
 	spacing = 1,
 	growup = true,
