@@ -329,17 +329,11 @@ do
 	end
 end
 ------------------------------------------------------------------------------
-ns.moving = false
 function ns:UpdateAllBars()
 	if ns.moving then return end
 	self:SortShields()
-	--for i, tbl in ns:IterateShields() do
-	--	self:Debugf('%d: %s', i, tbl.name)
-	--end
-	
-	--bar:SetUnlocked(true)
 end
-
+------------------------------------------------------------------------------
 -- code for moving the frames :)
 local anchor = CreateFrame('Frame', name..'AddOnAnchorFrame', container)
 anchor:SetAlpha(0)
