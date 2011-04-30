@@ -60,7 +60,7 @@ function ns:HasActiveShields()
 end
 function ns:GetNumShields()
 	return #active
-en
+end
 function ns:GetShield(i)
 	return active[i]
 end
