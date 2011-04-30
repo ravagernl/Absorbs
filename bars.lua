@@ -108,7 +108,7 @@ function barPrototype:Delete()
 end
 function barPrototype:SetAbsorbColor(r, g, b)
 	self.widgets.bars.absorb:SetStatusBarColor(r, g, b)
-	self.widgets.textures.absorb:SetVertexColor(r/2, g/2, b/2)
+	self.widgets.textures.absorb:SetVertexColor(r/3, g/3, b/3)
 end
 function barPrototype:SetAbsorbValue()
 	self.widgets.bars.absorb:SetMinMaxValues(0, self.data.max)
