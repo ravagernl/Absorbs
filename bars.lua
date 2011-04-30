@@ -167,7 +167,13 @@ function barPrototype:SetUnit()
 	local unit = self.data.unit
 	if unit and unit ~= '' then
 		local _, class = UnitClass(unit)
-		self:SetAbsorbColor(unpack(colors[class]))
+		local color
+		if self.unlocked then
+			color = randomcolors[math.random(1, #randomcolors)]
+		else
+			color = colors[class]
+		end
+		self:SetAbsorbColor(unpack(color))
 		if unit == 'player' then
 			self.widgets.fontstrings.name:SetText('')
 		else
@@ -176,6 +182,7 @@ function barPrototype:SetUnit()
 		end
 	else
 		self.widgets.fontstrings.name:SetText('')
+		self:SetAbsorbColor(0,0,0)
 	end
 end
 do
@@ -193,10 +200,9 @@ do
 			self:SetBackdropColor(0,0,0,1)
 		end
 
-		for _, bar in pairs(self.widgets.bars) do
-			bar:SetStatusBarTexture(config.texture)
-		end
+		self.widgets.bars.absorb:SetStatusBarTexture(config.texture)
 		self.widgets.textures.absorb:SetTexture(config.texture)
+		self.widgets.bars.timer:SetStatusBarTexture("Interface\\Buttons\\WHITE8x8")
 
 		-- Icon
 		self.widgets.textures.icon:SetTexCoord(0.07,0.93,0.07,0.93)
