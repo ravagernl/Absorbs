@@ -6,7 +6,7 @@ local config = ns.config
 ------------------------------------------------------------------------------
 local GetTime = GetTime
 local unpack = unpack
-local tinsert, tremove = tinsert, tremove
+local tinsert, tremove, wipe = tinsert, tremove, wipe
 local UnitClass, UnitName = UnitClass, UnitName
 ------------------------------------------------------------------------------
 -- Native Tukui support
@@ -81,12 +81,15 @@ local backdrop = {
 }
 local colornames = {}
 local colors = {}
+local randomcolors = {}
 local function SetColors()
+	wipe(randomcolors)
 	for class, c  in pairs(CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS) do
 		colornames[class] = string.format("(|cff%02x%02x%02x%%s|r)", c.r*255, c.g*255, c.b*255)
 		-- because I am lazy and want to use unpack
 		c[1], c[2], c[3] = c.r, c.g, c.b
 		colors[class] = c
+		tinsert(randomcolors, c)
 	end
 end
 SetColors()
