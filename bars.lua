@@ -230,7 +230,7 @@ widgets.barPrototype = barPrototype
 ------------------------------------------------------------------------------
 local newBar
 do
-	local function setValue(self, value)
+	local function UpdateTexCoords(self, value)
 		local min, max = self:GetMinMaxValues()
 		self:GetStatusBarTexture():SetTexCoord(0, (value - min) / (max - min), 0, 1)
 	end
@@ -254,15 +254,15 @@ do
 			bar.widgets.textures.icon = icon
 			
 			local absorb = CreateFrame("StatusBar", name..'AddOnBar'..i..'AbsorbStatusBar', bar)
-			hooksecurefunc(absorb, "SetValue", setValue)
+			hooksecurefunc(absorb, "SetValue", UpdateTexCoords)
 			bar.widgets.bars.absorb = absorb
 			
 			local bg = absorb:CreateTexture(nil, "BACKGROUND")	
 			bar.widgets.textures.absorb = bg
 			
-			local timer = CreateFrame("StatusBar", name..'AddOnBar'..i..'TimerStatusBar', absorbBar)
-			hooksecurefunc(timer, "SetValue", setValue)
-			bar.widgets.bars.timer = timer			
+			local timer = CreateFrame("StatusBar", name..'AddOnBar'..i..'TimerStatusBar', absorb)
+			hooksecurefunc(absorb, "SetValue", UpdateTexCoords)
+			bar.widgets.bars.timer = timer
 			
 			-- texts
 			local count = SetFontString(iconFrame, config.font.path, config.font.size)
