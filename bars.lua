@@ -34,6 +34,17 @@ local activeBars = {}
 widgets.barPrototype = barPrototype
 widgets.activeBars = activeBars
 ------------------------------------------------------------------------------
+local container = CreateFrame('Frame', name..'AddOnContainerFrame', UIParent)
+container:SetClampedToScreen(true)
+container:SetMovable(true)
+if Tukui then
+	container:Size(config.width, config.height + config.spacing)
+else
+	container:SetSize(config.width, config.height + config.spacing)
+end
+container:SetPoint('CENTER', 0, -200)
+widgets.container = container
+------------------------------------------------------------------------------
 local SecondsToTimeDetail
 do
 	local tformat1 = "%d:%02d"
@@ -68,7 +79,6 @@ local backdrop = {
 	bgFile = "Interface/Tooltips/UI-Tooltip-Background",
 	insets = { left = -1, right = -1, top = -1, bottom = -1}
 }
-------------------------------------------------------------------------------
 local colornames = {}
 local colors = {}
 local function SetColors()
@@ -85,16 +95,25 @@ if CUSTOM_CLASS_COLORS then
 end
 SetColors = nil
 ------------------------------------------------------------------------------
-local container = CreateFrame('Frame', name..'AddOnContainerFrame', UIParent)
-container:SetClampedToScreen(true)
-container:SetMovable(true)
-if Tukui then
-	container:Size(config.width, config.height + config.spacing)
-else
-	container:SetSize(config.width, config.height + config.spacing)
+local testObject
+do
+	local name, rank, icon, cost, isFunnel, powerType, castTime, minRange, maxRange = GetSpellInfo(17)
+	testObject = {
+		unit = 'player',
+		guid = UnitGUID('target'),
+		id = 17,
+		name = 'w00p w00p w00p',
+		type = 'BUFF',
+		max = 1600,
+		cur = 1500,
+		absorbType = nil,
+		icon = icon,
+		count = 1,
+		debuffType = debuffType,
+		duration = 15,
+		expirationTime = GetTime() + 10
+	}
 end
-container:SetPoint('CENTER', 0, -200)
-widgets.container = container
 ------------------------------------------------------------------------------
 function barPrototype:SetData(object)
 	if not (self.data and object and self.data == object) then
