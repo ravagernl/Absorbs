@@ -85,6 +85,17 @@ if CUSTOM_CLASS_COLORS then
 end
 SetColors = nil
 ------------------------------------------------------------------------------
+local container = CreateFrame('Frame', name..'AddOnContainerFrame', UIParent)
+container:SetClampedToScreen(true)
+container:SetMovable(true)
+if Tukui then
+	container:Size(config.width, config.height + config.spacing)
+else
+	container:SetSize(config.width, config.height + config.spacing)
+end
+container:SetPoint('CENTER', 0, -200)
+widgets.container = container
+------------------------------------------------------------------------------
 function barPrototype:SetData(object)
 	if not (self.data and object and self.data == object) then
 		self.data = object
@@ -197,17 +208,15 @@ do
 	end
 end
 function barPrototype:UpdateSize(width, height)
-	if width then
-		self.width = width
-	end
 	if height then
 		self.height = height
 	end
 	if Tukui then
-		self:Size(self.width, self.height)
+		self:Height(self.height)
 	else
-		self:SetSize(self.width, self.height)
+		self:SetHeight(self.height)
 	end
+
 	-- Repoint absorb bar if icon texture is hidden
 	if self.widgets.textures.icon:GetTexture() then
 		if Tukui then 
@@ -235,12 +244,16 @@ do
 		self:GetStatusBarTexture():SetTexCoord(0, (value - min) / (max - min), 0, 1)
 	end
 	local i = 1
-	function newBar(width, height)
+	function newBar(height)
 		local bar = tremove(availableBars)
 		if bar then
 			bar:Show()
 		else
 			bar = setmetatable(CreateFrame("Frame", name..'AddOnBar'..i, UIParent), barPrototype_meta)
+
+			bar:SetPoint('LEFT', container)
+			bar:SetPoint('RIGHT', container)
+
 			bar.widgets = {}
 			bar.widgets.frames = {}
 			bar.widgets.bars = {}
@@ -288,13 +301,12 @@ do
 			i = i + 1
 		end
 		bar.unlocked = false
-		bar:UpdateSize(width, height)		
+		bar:UpdateSize(height)		
 		tinsert(activeBars, bar)
 		return bar
 	end
 end
 ------------------------------------------------------------------------------
-local container
 local move = false
 function ns:UpdateAllBars()
 	if move then return end
@@ -307,18 +319,6 @@ function ns:UpdateAllBars()
 end
 
 -- code for moving the frames :)
-container = CreateFrame('Frame', name..'AddOnContainerFrame', UIParent)
-container:SetClampedToScreen(true)
-container:SetMovable(true)
-if Tukui then
-	container:Size(config.width, config.height + config.spacing)
-else
-	container:SetSize(config.width, config.height + config.spacing)
-end
-container:SetPoint('CENTER', 0, -200)
-
-widgets.container = container
-
 local anchor = CreateFrame('Frame', name..'AddOnAnchorFrame', container)
 anchor:SetAlpha(0)
 anchor:SetHeight(config.height)
