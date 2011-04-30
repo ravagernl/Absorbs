@@ -329,9 +329,9 @@ do
 	end
 end
 ------------------------------------------------------------------------------
-local move = false
+ns.moving = false
 function ns:UpdateAllBars()
-	if move then return end
+	if ns.moving then return end
 	self:SortShields()
 	--for i, tbl in ns:IterateShields() do
 	--	self:Debugf('%d: %s', i, tbl.name)
@@ -380,8 +380,8 @@ widgets.anchor = anchor
 _G['SLASH_'..name:upper()..'ADDON1'] = "/"..name:lower()
 SlashCmdList[name:upper()..'ADDON'] = function()
 	--if InCombatLockdown() then print(ERR_NOT_IN_COMBAT) return end
-	if not move then
-		move = true
+	if not ns.moving then
+		ns.moving = true
 		anchor:EnableMouse(true)
 		anchor:SetAlpha(1)
 		anchor:SetScript("OnMouseDown", function(self) container:StartMoving() end)
@@ -416,7 +416,7 @@ SlashCmdList[name:upper()..'ADDON'] = function()
 			container:SetHeight(height)
 		end
 	else
-		move = false
+		ns.moving = false
 		anchor:EnableMouse(false)
 		anchor:SetAlpha(0)
 		for i, bar in next, activeBars do
