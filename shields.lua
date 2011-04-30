@@ -55,6 +55,12 @@ do
 		tsort(active, sortFunc)
 	end
 end
+function ns:HasActiveShields()
+	return #active > 0
+end
+function ns:GetNumShields()
+	return #active
+en
 function ns:GetShield(i)
 	return active[i]
 end
@@ -70,17 +76,6 @@ end
 function ns:IsTrackableShield(id)
 	return self.shields[id] and 1 or nil
 end
-
---[[
-function ns:HasShieldFromGUID(guid, id)
-	return self.activeShields[guid..'_'..id] and 1 or nil
-end
-]]
-
-function ns:HasActiveShields()
-	return #active > 0, #active
-end
-
 function ns:UpdateFromTooltipByGUID(guid, id, amount, absorbType, icon, count, debuffType, duration, expirationTime)
 	local tbl = self.activeShields[guid..'_'..id]
 	if not tbl then return end
