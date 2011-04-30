@@ -274,6 +274,13 @@ do
 			
 			local absorb = SetFontString(absorb, config.font.path, config.font.size)
 			bar.widgets.fontstrings.absorb = absorb
+
+			-- Set __owner field on each widget to bar
+			for key, tbl in next, bar.widgets do
+				for key, object in next, tbl do
+					object.__owner = bar
+				end
+			end
 			
 			bar:Style()		
 			i = i + 1
