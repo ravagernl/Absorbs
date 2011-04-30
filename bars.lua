@@ -160,7 +160,12 @@ function barPrototype:Style()
 	self.widgets.textures.absorb:SetTexture(config.texture)
 end
 function barPrototype:UpdateSize(width, height)
-	self.width, self.height = width, height
+	if width then
+		self.width = width
+	end
+	if height then
+		self.height = height
+	end
 	if Tukui then
 		self:Size(self.width, self.height)
 	else
@@ -195,7 +200,9 @@ do
 	local i = 1
 	function newBar(width, height)
 		local bar = tremove(availableBars)
-		if not bar then
+		if bar then
+			bar:Show()
+		else
 			bar = setmetatable(CreateFrame("Frame", name..'AddOnBar'..i, UIParent), barPrototype_meta)
 			bar.widgets = {}
 			bar.widgets.frames = {}
