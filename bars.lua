@@ -384,10 +384,12 @@ SlashCmdList[name:upper()..'ADDON'] = function()
 		for i = 1, 5 do
 			local bar = activeBars[i] or newBar(config.height)
 			activeBars[i] = bar
+			bar:SetUnlocked()
+			testObject.expirationTime = GetTime() + (i * 2)
+			testObject.cur = (testObject.max / 5) * (6 - i)
 			bar:SetData(testObject)
 			bar:SetStackCount()
 			bar:SetAbsorbValue()
-			bar:SetUnlocked()
 			if Tukui then
 				if config.growup then
 					bar:Point('BOTTOM', prev, 'TOP', 0, config.spacing)
