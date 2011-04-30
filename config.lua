@@ -3,6 +3,7 @@ local config = {
 	width = 214,
 	spacing = 1,
 	growup = true,
+	showicon = true,
 	tukuishadows = true,
 	tukuiskinning = true,
 	texture = [[Interface\TargetingFrame\UI-StatusBar]],

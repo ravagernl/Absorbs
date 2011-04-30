@@ -101,6 +101,7 @@ function barPrototype:SetLocked()
 	self.unlocked = false
 end
 function barPrototype:Delete()
+	self.widgets.textures.icon:SetTexture()
 	self.data = nil
 	tinsert(availableBars, self)
 	self:Hide()
@@ -115,11 +116,14 @@ function barPrototype:SetAbsorbValue()
 	self.widgets.fontstrings.absorb:SetFormattedText("%d/%d", self.data.cur, self.data.max)
 end
 function barPrototype:SetSpell()
-	self:SetIcon()
+	if config.showicon then
+		self:SetIcon()
+	end
 	self.widgets.fontstrings.spell:SetText(self.data.name)
 end
 function barPrototype:SetIcon()
 	self.widgets.textures.icon:SetTexture(self.data.icon)
+	self:UpdateSize()
 end
 function barPrototype:SetStackCount()
 	self.widgets.fontstrings.count:SetText(self.data.count > 1 and self.data.count or '')
@@ -161,6 +165,22 @@ function barPrototype:UpdateSize(width, height)
 		self:Size(self.width, self.height)
 	else
 		self:SetSize(self.width, self.height)
+	end
+	-- Repoint absorb bar if icon texture is hidden
+	if self.widgets.textures.icon:GetTexture() then
+		if Tukui then 
+			self.widgets.textures.icon:Width(self.height-4)
+			self.widgets.bars.absorb:Point('LEFT', self.widgets.textures.icon, 'RIGHT', 1, 0)
+		else
+			self.widgets.textures.icon:SetWidth(self.height)
+			self.widgets.bars.absorb:SetPoint('LEFT', self.widgets.textures.icon, 'RIGHT', 1, 0)
+		end
+	else
+		if Tukui then 
+			self.widgets.bars.absorb:Point('LEFT', 2, 0)
+		else
+			self.widgets.bars.absorb:SetPoint('LEFT')
+		end
 	end
 end
 ------------------------------------------------------------------------------
