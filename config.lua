@@ -11,7 +11,7 @@ local config = {
 		path = [[Fonts\ARIALN.TTF]], 
 		size = 12
 	},
-	timercolor = {1, 1, 0, .3},
+	timercolor = {1, 1, 1, .1},
 }
 local name, ns = ...
 ns.config = config

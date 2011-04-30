@@ -336,7 +336,7 @@ do
 end
 ------------------------------------------------------------------------------
 function ns:UpdateAllBars()
-	if ns.moving then return end
+	if self.moving then return end
 	self:SortShields()
 end
 ------------------------------------------------------------------------------
