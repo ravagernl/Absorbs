@@ -77,7 +77,7 @@ function ns:FindActiveShieldIndexFromGUID(guid, id)
 			return index, tbl
 		end
 	end
-	self:Debugf('Can not find table index for guid:"%s" spellid:"%d" in active shields table.', guid, id)
+	self:Debugf('|cffff6666Can not find table index for guid:"%s" spellid:"%d" in active shields table.|r', guid, id)
 end
 
 function ns:IsTrackableShield(id)
@@ -91,16 +91,15 @@ function ns:UpdateFromTooltipByGUID(guid, id, amount, absorbType, icon, count, d
 		tbl.max = 0 + amount
 	end
 	if tbl.cur ~= amount then
+		tbl.cur = 0 + amount
 		tbl.curChanged = true
 	end
-	tbl.cur = 0 + amount
 	tbl.absorbType = absorbType and absorbType:lower() or nil
 	tbl.icon = icon
 	tbl.count = min(1, 0 + count)
 	tbl.debuffType = debuffType
 	tbl.duration = 0 + duration
 	tbl.expirationTime = expirationTime
-	--self:Debugf('%s is now at %d/%d %s absorb value.', tbl.name, tbl.cur, tbl.max, tbl.absorbType)
 end
 
 function ns:UpdateMax(unit, guid, id, name, type, amount, removed)
@@ -124,6 +123,7 @@ function ns:UpdateMax(unit, guid, id, name, type, amount, removed)
 		tbl.max = tonumber(amount) or 0
 		tbl.cur = tonumber(amount) or 0
 		tbl.maxChanged = true
+		tbl.curChanged = true
 		tinsert(active, tbl)
 		activeShields[guid..'_'..id] = tbl
 	end
