@@ -434,6 +434,41 @@ end
 function ns:UpdateAllBars()
 	if self.moving then return end
 	self:SortShields()
+	if ns:HasActiveShields() then
+		local prev = container
+		for i = 1,  ns:GetNumShields() do
+			ns:Debug('bar ', i)
+			local bar = activeBars[i] or newBar(config.height)
+			bar:SetData(ns:GetShield(i))
+			bar:SetStackCount()
+			bar:SetAbsorbValue()
+			if Tukui then
+				if config.growup then
+					bar:Point('BOTTOM', prev, 'TOP', 0, spacing)
+				else
+					bar:Point('TOP', prev, 'BOTTOM', 0, -spacing)
+				end
+			else
+				if config.growup then
+					bar:SetPoint('BOTTOM', prev, 'TOP', 0, spacing)
+				else
+					bar:SetPoint('TOP', prev, 'BOTTOM', 0, -spacing)
+				end
+			end
+			prev = bar
+		end
+		local height = ((config.height + spacing) * (#activeBars)) - spacing
+		if Tukui then
+			container:Height(height)
+		else
+			container:SetHeight(height)
+		end
+	end
+	-- remove leftover bars.
+	for i = ns:GetNumShields() + 1, #activeBars do
+		local bar = activeBars[i]
+		bar:Delete()
+	end
 end
 ------------------------------------------------------------------------------
 local anchor = CreateFrame('Frame', name..'AddOnAnchorFrame', container)
@@ -485,7 +520,6 @@ SlashCmdList[name:upper()..'ADDON'] = function()
 		local max = testObject.max
 		for i = 1, 5 do
 			local bar = activeBars[i] or newBar(config.height)
-			activeBars[i] = bar
 			bar:SetUnlocked()
 
 			local id = ns.shieldsIndex[math.random(#ns.shieldsIndex)]
