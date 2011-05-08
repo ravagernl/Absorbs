@@ -19,8 +19,9 @@ local config = {
 	barbgcolor = {.1, .1, .1},
 	classcolorbars = false,
 	shortspell = true,
+	shortname = true,
 	hidespell = false,
-	shortnames = true,
+	hidename = false,
 }
 local name, ns = ...
 ns.config = config
