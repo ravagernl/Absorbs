@@ -26,9 +26,9 @@ local container = CreateFrame('Frame', name..'AddOnContainerFrame', UIParent)
 container:SetClampedToScreen(true)
 container:SetMovable(true)
 if Tukui then
-	container:Size(config.width, config.height + spacing)
+	container:Size(config.width, config.height)
 else
-	container:SetSize(config.width, config.height + spacing)
+	container:SetSize(config.width, config.height)
 end
 container:SetPoint('CENTER', 0, -200)
 widgets.container = container
