@@ -100,17 +100,16 @@ SetColors = nil
 ------------------------------------------------------------------------------
 local testObject
 do
-	local name, rank, icon, cost, isFunnel, powerType, castTime, minRange, maxRange = GetSpellInfo(17)
+	local name, rank, icon = GetSpellInfo(17)
 	testObject = {
+		name = name,
+		icon = icon,
 		unit = 'player',
-		guid = UnitGUID('target'),
-		id = 17,
-		name = 'w00p w00p w00p',
+		guid = UnitGUID('player'), 
 		type = 'BUFF',
 		max = 1600,
 		cur = 1500,
 		absorbType = nil,
-		icon = icon,
 		count = 1,
 		debuffType = debuffType,
 		duration = 15,
