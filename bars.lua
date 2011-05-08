@@ -130,9 +130,7 @@ local function SetFontString(parent, fontName, fontHeight)
 	fs:SetFont(fontName, fontHeight, fontStyle)
 	fs:SetShadowColor(0, 0, 0, 0)
 	fs:SetShadowOffset(0, 0)
-	
 	ns:Debug(parent:GetName(), 'SetFontString', fontName, fontHeight, fontStyle)
-	
 	return fs
 end
 local backdrop = {
