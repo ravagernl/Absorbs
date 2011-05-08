@@ -90,7 +90,7 @@ function ns:UpdateFromTooltipByGUID(guid, id, amount, absorbType, icon, count, d
 		tbl.maxChanged = true
 		tbl.max = 0 + amount
 	end
-	if tbl.cur or 0 > amount or 0 then
+	if tbl.cur ~= amount then
 		tbl.curChanged = true
 	end
 	tbl.cur = 0 + amount
@@ -118,11 +118,11 @@ function ns:UpdateMax(unit, guid, id, name, type, amount, removed)
 		local tbl = tremove(cache) or {}
 		tbl.unit = unit
 		tbl.guid = guid
-		tbl.id = 0 + id
+		tbl.id = id
 		tbl.name = name
 		tbl.type = type
-		tbl.max = 0 + amount
-		tbl.cur = 0 + amount
+		tbl.max = tonumber(amount) or 0
+		tbl.cur = tonumber(amount) or 0
 		tbl.maxChanged = true
 		tinsert(active, tbl)
 		activeShields[guid..'_'..id] = tbl
