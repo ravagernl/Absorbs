@@ -9,7 +9,8 @@ local config = {
 	texture = [[Interface\TargetingFrame\UI-StatusBar]],
 	font = {
 		path = [[Fonts\ARIALN.TTF]], 
-		size = 12
+		size = 12,
+		spacing = 3,
 	},
 	timercolor = {1, 1, 1, .1},
 }
