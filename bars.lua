@@ -346,7 +346,7 @@ do
 			bar:Style()		
 			i = i + 1
 		end
-		bar.unlocked = false
+		bar:SetLocked()
 		bar:UpdateHeight(height)
 		bar:InitAbsorbBar()		
 		tinsert(activeBars, bar)
@@ -429,9 +429,9 @@ SlashCmdList[name:upper()..'ADDON'] = function()
 				end
 			else
 				if config.growup then
-					bar:Point('BOTTOM', prev, 'TOP', 0, spacing)
+					bar:SetPoint('BOTTOM', prev, 'TOP', 0, spacing)
 				else
-					bar:Point('TOP', prev, 'BOTTOM', 0, -spacing)
+					bar:SetPoint('TOP', prev, 'BOTTOM', 0, -spacing)
 				end
 			end
 			prev = bar
