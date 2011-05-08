@@ -245,7 +245,14 @@ do
 			self.widgets.bars.absorb:SetAllPoints()
 		end
 		-- timer
-		self.widgets.bars.timer:SetAllPoints(self.widgets.bars.absorb)
+		self.widgets.bars.timer:SetPoint('LEFT', self.widgets.bars.absorb)
+		self.widgets.bars.timer:SetPoint('BOTTOM', self.widgets.bars.absorb)
+		self.widgets.bars.timer:SetPoint('RIGHT', self.widgets.bars.absorb)
+		if Tukui then
+			self.widgets.bars.timer:Height(1)
+		else
+			self.widgets.bars.timer:SetHeight(1)
+		end
 		self.widgets.bars.timer:SetStatusBarColor(unpack(config.timercolor))
 		self.widgets.bars.timer:SetMinMaxValues(0, 1)
 		self.widgets.bars.timer:SetValue(.8)
