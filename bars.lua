@@ -33,6 +33,25 @@ end
 container:SetPoint('CENTER', 0, -200)
 widgets.container = container
 ------------------------------------------------------------------------------
+local shortnum
+do 
+	local function round(num, idp)
+		if idp and idp > 0 then
+			local mult = 10^idp
+			return math.floor(num * mult + 0.5) / mult
+		end
+		return math.floor(num + 0.5)
+	end
+	function shortnum(num)
+		if(num >= 1e6) then
+			return round(num/1e6,config.font.decimals).."m"
+		elseif(num >= 1e4) then
+			return round(num/1e3,0).."k"
+		else
+			return num
+		end
+	end
+end
 local SecondsToTimeDetail
 do
 	local tformat1 = "%d:%02d"
@@ -112,7 +131,7 @@ do
 	local function OnAbsorbValueChanged(bar, value)
 		local min, max = bar:GetMinMaxValues()
 		ns:Debug(bar.__owner:GetID(), 'OnAbsorbValueChanged', min, max, value)
-		bar.__owner.widgets.fontstrings.absorb:SetFormattedText("%d/%d", value, max)
+		bar.__owner.widgets.fontstrings.absorb:SetFormattedText("%s/%s", shortnum(value), shortnum(max))
 	end
 	function barPrototype:SetData(object)
 		if not (self.data and object and self.data == object) then
