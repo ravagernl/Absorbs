@@ -10,16 +10,13 @@ if Tukui then
 	config.font.style = "THINOUTLINE"
 	config.font.size = T.Duffed and C.unitframes.fontsize or 12
 	config.texture = C.media.normTex
-	-- Duffed UI support
-	if not config.classcolorbars and T.Duffed then
-		if C["unitframes"].unicolor then
-			config.barcolor = C["unitframes"].healthbarcolor
-			config.barbgcolor = C["unitframes"].deficitcolor
-			if C.unitframes.ColorGradient then
-				config.barbgcolor = {.2, .2, .2}
-			end
-		else
-			config.barbgcolor = {.1, .1, .1}
+	if C["unitframes"].unicolor then
+		config.barcolor = C["unitframes"].healthbarcolor
+		config.barbgcolor = C["unitframes"].deficitcolor
+		if T.Duffed then -- stupid red
+			config.barbgcolor = {.1,.1,.1}
 		end
+	else
+		config.classcolorbars = true
 	end
 end
