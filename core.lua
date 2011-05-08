@@ -118,4 +118,4 @@ evtframe:SetScript("OnEvent", function(self, event, timestamp, type, hideCaster,
 	end
 end)
 
-_G[name..'AddOnFrame'] = ns
+_G[name..'AddOn'] = ns
