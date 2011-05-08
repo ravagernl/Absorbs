@@ -1,8 +1,12 @@
 local name, ns = ...
+local select = select
 ------------------------------------------------------------------------------
 local debugf = tekDebug and tekDebug:GetFrame(name)
 function ns:Debug(...)
-	if debugf then
+	if not debugf then return end
+	if select('#', ...) == 1 then
+		debugf:AddMessage(tostring(...))
+	else
 		debugf:AddMessage(string.join(', ', tostringall(...)))
 	end
 end
