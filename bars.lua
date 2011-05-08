@@ -43,12 +43,12 @@ do
 		return math.floor(num + 0.5)
 	end
 	function shortnum(num)
-		if(num >= 1e6) then
-			return round(num/1e6,config.font.decimals).."m"
-		elseif(num >= 1e4) then
+		if num < 1e4 then
+			return num
+		elseif num < 1e6 then
 			return round(num/1e3,0).."k"
 		else
-			return num
+			return round(num/1e6,config.font.decimals).."m"
 		end
 	end
 end
