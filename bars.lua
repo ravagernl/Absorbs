@@ -288,6 +288,46 @@ do
 		ns:Debug(self:GetID(), 'SetStackCount', self.data.count)
 		self.widgets.fontstrings.count:SetText(self.data.count > 1 and self.data.count or '')
 	end
+	local SmoothBar
+	do
+		-- Kind of stolen from oUF_Smooth.
+		local smoothing = {}
+		local function Smooth(self, value)
+			local min, max = self:GetMinMaxValues()
+			if value == max or value == min then
+				self:SetValue_(value)
+			elseif value ~= self:GetValue() or value == 0 then
+				smoothing[self] = value
+			else
+				smoothing[self] = nil
+			end
+		end
+		local f, min, max = CreateFrame('Frame'), math.min, math.max
+		f:Hide()
+		f:SetScript('OnUpdate', function()
+			local rate = GetFramerate()
+			local limit = 30/rate
+			for bar, value in pairs(smoothing) do
+				local cur = bar:GetValue()
+				local new = cur + min((value-cur)/3, max(value-cur, limit))
+				if new ~= new then
+					-- Mad hax to prevent QNAN.
+					new = value
+				end
+				bar:SetValue_(new)
+				if cur == value or abs(new - value) < 2 then
+					bar:SetValue_(value)
+					smoothing[bar] = nil
+				end
+			end
+		end)
+		function SmoothBar(bar)
+			-- Start the onupdate
+			f:Show()
+			bar.SetValue_ = bar.SetValue
+			bar.SetValue = Smooth
+		end
+	end
 	function barPrototype:Style()
 		ns:Debug(debugLine, self:GetID(), 'Style')
 		if Tukui then
@@ -325,6 +365,9 @@ do
 			self.widgets.bars.absorb:SetAllPoints()
 		end
 		self.widgets.bars.absorb:SetScript('OnValueChanged', OnAbsorbValueChanged)
+		if config.smoothbar then
+			SmoothBar(self.widgets.bars.absorb)
+		end
 		-- timer
 		self.widgets.bars.timer:SetPoint('LEFT', self.widgets.bars.absorb)
 		self.widgets.bars.timer:SetPoint('BOTTOM', self.widgets.bars.absorb)
