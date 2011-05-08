@@ -2,7 +2,7 @@
 ## Title: Absorbs
 ## Notes: Simple absorb effect monitor
 ## Author: mrruben5
-## Version: 0.4
+## Version: 0.5
 ## OptionalDeps: tekDebug, Tukui, ElvUI, !ClassColors
 
 debug.lua
