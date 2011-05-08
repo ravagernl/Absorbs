@@ -110,9 +110,9 @@ end
 ------------------------------------------------------------------------------
 do
 	local function OnAbsorbValueChanged(bar, value)
-		ns:Debug(bar.__owner:GetID(), 'OnAbsorbValueChanged', bar:GetMinMaxValues(), value)
-		local self = bar.__owner
-		self.widgets.fontstrings.absorb:SetFormattedText("%d/%d", self.data.cur, self.data.max)
+		local min, max = bar:GetMinMaxValues()
+		ns:Debug(bar.__owner:GetID(), 'OnAbsorbValueChanged', min, max, value)
+		bar.__owner.widgets.fontstrings.absorb:SetFormattedText("%d/%d", value, max)
 	end
 	function barPrototype:SetData(object)
 		if not (self.data and object and self.data == object) then
@@ -134,31 +134,28 @@ do
 	function barPrototype:Delete()
 		ns:Debug(debugLine, self:GetID(), 'Delete')
 		self.widgets.bars.timer:Hide()
-		if config.smoothbar then
-			self.widgets.bars.absorb:SetScript('OnValueChanged', nil)
-		end
 		self.data = nil
 		tinsert(availableBars, self)
 		self:Hide()
 	end
 	function barPrototype:InitAbsorbBar()
 		self.widgets.bars.absorb:SetMinMaxValues(0, 1)
-		self.widgets.bars.absorb:SetValue(.5)
 		self.widgets.bars.absorb:SetScript('OnValueChanged', OnAbsorbValueChanged)
+		self.widgets.bars.absorb:SetValue(.5)
 	end
 	function barPrototype:SetAbsorbValue()
-		ns:Debug(self:GetID(), 'SetAbsorbValue')
 		if self.data.maxChanged or self.data.curChanged then
 			if self.data.maxChanged then
-				-- Do something
-			elseif self.data.curChanged then
-				-- Do something
+				ns:Debug(self:GetID(), 'SetAbsorbValue', 'maxChanged', self.data.max)
+				self.widgets.bars.absorb:SetMinMaxValues(0, self.data.max)
+				self.data.maxChanged = false
 			end
-			self.data.maxChanged = false
-			self.data.curChanged = false
-		end
-		self.widgets.bars.absorb:SetMinMaxValues(0, self.data.max)
-		self.widgets.bars.absorb:SetValue(self.data.cur)
+			if self.data.curChanged then
+				ns:Debug(self:GetID(), 'SetAbsorbValue', 'curChanged', self.data.cur)
+				self.widgets.bars.absorb:SetValue(self.data.cur)
+				self.data.curChanged = false
+			end
+		end		
 	end
 	function barPrototype:SetAbsorbColor(r, g, b)
 		ns:Debug(self:GetID(), 'SetAbsorbColor', r, g, b)
