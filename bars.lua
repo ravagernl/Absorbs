@@ -72,7 +72,9 @@ local function SetFontString(parent, fontName, fontHeight)
 	fs:SetFont(fontName, fontHeight, fontStyle)
 	fs:SetShadowColor(0, 0, 0, 0)
 	fs:SetShadowOffset(0, 0)
-
+	
+	ns:Debug(parent:GetName(), 'SetFontString', fontName, fontHeight, fontStyle)
+	
 	return fs
 end
 local backdrop = {
@@ -97,6 +99,7 @@ if CUSTOM_CLASS_COLORS then
 	CUSTOM_CLASS_COLORS:RegisterCallback(SetColors)
 end
 SetColors = nil
+local debugLine = '|cFFFF9900----|r'
 ------------------------------------------------------------------------------
 local testObject
 do
@@ -104,91 +107,129 @@ do
 	testObject = {
 		name = name,
 		icon = icon,
-		unit = 'player',
+		unit = 'player', 
 		guid = UnitGUID('player'), 
-		type = 'BUFF',
-		max = 1600,
-		cur = 1500,
-		absorbType = nil,
-		count = 1,
-		debuffType = debuffType,
-		duration = 15,
+		type = 'BUFF', 
+		max = 1600, 
+		cur = 1500, 
+		absorbType = nil, 
+		count = 1, 
+		debuffType = debuffType, 
+		duration = 15, 
 		expirationTime = GetTime() + 10
 	}
 end
 ------------------------------------------------------------------------------
-function barPrototype:SetData(object)
-	if not (self.data and object and self.data == object) then
-		self.data = object
-		self:SetSpell()
-		self:SetUnit()
-		return true
-	end
-	return false
-end
-function barPrototype:SetUnlocked()
-	self.unlocked = true
-end
-function barPrototype:SetLocked()
-	self.unlocked = false
-end
-function barPrototype:Delete()
-	self.widgets.bars.absorb:SetMinMaxValues(0, 1)
-	self.widgets.bars.absorb:SetValue(1)
-	self.widgets.textures.icon:SetTexture()
-	self.data = nil
-	tinsert(availableBars, self)
-	self:Hide()
-end
-function barPrototype:SetAbsorbColor(r, g, b)
-	self.widgets.bars.absorb:SetStatusBarColor(r, g, b)
-	self.widgets.textures.absorb:SetVertexColor(r/3, g/3, b/3)
-end
-function barPrototype:SetAbsorbValue()
-	self.widgets.bars.absorb:SetMinMaxValues(0, self.data.max)
-	self.widgets.bars.absorb:SetValue(self.data.cur)
-	self.widgets.fontstrings.absorb:SetFormattedText("%d/%d", self.data.cur, self.data.max)
-end
-function barPrototype:SetSpell()
-	if config.showicon then
-		self:SetIcon()
-	end
-	self.widgets.fontstrings.spell:SetText(self.data.name)
-end
-function barPrototype:SetIcon()
-	self.widgets.textures.icon:SetTexture(self.data.icon)
-	self:UpdateSize()
-end
-function barPrototype:SetStackCount()
-	self.widgets.fontstrings.count:SetText(self.data.count > 1 and self.data.count or '')
-end
-function barPrototype:SetUnit()
-	local unit = self.data.unit
-	if unit and unit ~= '' then
-		local _, class = UnitClass(unit)
-		local color
-		if self.unlocked then
-			color = randomcolors[math.random(1, #randomcolors)]
-		else
-			color = colors[class]
-		end
-		self:SetAbsorbColor(unpack(color))
-		if unit == 'player' then
-			self.widgets.fontstrings.name:SetText('')
-		else
-			local colorname = colornames[class]:format(UnitName(unit))
-			self.widgets.fontstrings.name:SetText(colorname)
-		end
-	else
-		self.widgets.fontstrings.name:SetText('')
-		self:SetAbsorbColor(0,0,0)
-	end
-end
 do
 	local function OnAbsorbValueChanged(bar, value)
-		ns:Debug(bar, value)
+		ns:Debug(bar.__owner:GetID(), 'OnAbsorbValueChanged', bar:GetMinMaxValues(), value)
+		local self = bar.__owner
+		self.widgets.fontstrings.absorb:SetFormattedText("%d/%d", self.data.cur, self.data.max)
+	end
+	function barPrototype:SetData(object)
+		if not (self.data and object and self.data == object) then
+			ns:Debug(debugLine, self:GetID(), 'SetData')
+			self.data = object
+			self:SetSpell()
+			self:SetUnit()
+			self:SetTimer()
+			return true
+		end
+		return false
+	end
+	function barPrototype:SetUnlocked()
+		self.unlocked = true
+	end
+	function barPrototype:SetLocked()
+		self.unlocked = false
+	end
+	function barPrototype:Delete()
+		ns:Debug(debugLine, self:GetID(), 'Delete')
+		self.widgets.bars.timer:Hide()
+		if config.smoothbar then
+			self.widgets.bars.absorb:SetScript('OnValueChanged', nil)
+		end
+		self.data = nil
+		tinsert(availableBars, self)
+		self:Hide()
+	end
+	function barPrototype:InitAbsorbBar()
+		self.widgets.bars.absorb:SetMinMaxValues(0, 1)
+		self.widgets.bars.absorb:SetValue(.5)
+		self.widgets.bars.absorb:SetScript('OnValueChanged', OnAbsorbValueChanged)
+	end
+	function barPrototype:SetAbsorbValue()
+		ns:Debug(self:GetID(), 'SetAbsorbValue')
+		if self.data.maxChanged or self.data.curChanged then
+			if self.data.maxChanged then
+				-- Do something
+			elseif self.data.curChanged then
+				-- Do something
+			end
+			self.data.maxChanged = false
+			self.data.curChanged = false
+		end
+		self.widgets.bars.absorb:SetMinMaxValues(0, self.data.max)
+		self.widgets.bars.absorb:SetValue(self.data.cur)
+	end
+	function barPrototype:SetAbsorbColor(r, g, b)
+		ns:Debug(self:GetID(), 'SetAbsorbColor', r, g, b)
+		self.widgets.bars.absorb:SetStatusBarColor(r, g, b)
+		self.widgets.textures.absorb:SetVertexColor(r/3, g/3, b/3)
+	end
+	function barPrototype:SetSpell()
+		ns:Debug(self:GetID(), 'SetSpell', self.data.name)
+		self.widgets.fontstrings.spell:SetText(self.data.name)
+		self:SetIcon()
+	end
+	function barPrototype:SetTimer()
+		ns:Debug(self:GetID(), 'SetTimer')
+		self.widgets.bars.timer:Show()
+	end
+	function barPrototype:SetIcon()
+		ns:Debug(self:GetID(), 'SetIcon')
+		self.widgets.textures.icon:SetTexture(self.data.icon)
+		if config.showicon and self.widgets.textures.icon:GetTexture() then
+			ns:Debug(self:GetID(), 'SetIcon', '|cFF00FF00Icon visible!|', self.data.icon)
+			self.widgets.textures.icon:Show()
+		elseif config.showicon then
+			ns:Debug(self:GetID(), 'SetIcon', '|cFFFF0000Icon not set.|r', self:GetID())
+			self.widgets.textures.icon:Hide()
+		else
+			ns:Debug(self:GetID(), 'SetIcon', '|cFFFF0000Icons are disabled.|r', self.data.icon)
+			self.widgets.textures.icon:Hide()
+		end
+		self:UpdateHeight()
+	end
+	function barPrototype:SetStackCount()
+		ns:Debug(self:GetID(), 'SetStackCount', self.data.count)
+		self.widgets.fontstrings.count:SetText(self.data.count > 1 and self.data.count or '')
+	end
+	function barPrototype:SetUnit()
+		ns:Debug(self:GetID(), 'SetUnit', self.data.unit)
+		local unit = self.data.unit
+		if unit and unit ~= '' then
+			local _, class = UnitClass(unit)
+			local color
+			if self.unlocked then
+				color = randomcolors[math.random(#randomcolors)]
+			else
+				color = colors[class]
+			end
+			self:SetAbsorbColor(unpack(color))
+			if unit == 'player' then
+				self.widgets.fontstrings.name:SetText('')
+			else
+				local colorname = colornames[class]:format(UnitName(unit))
+				self.widgets.fontstrings.name:SetText(colorname)
+			end
+		else
+			self.widgets.fontstrings.name:SetText('')
+			self:SetAbsorbColor(0, 0, 0)
+		end
 	end
 	function barPrototype:Style()
+		ns:Debug(debugLine, self:GetID(), 'Style')
 		if Tukui then
 			self:SetTemplate()
 			if config.tukuishadows then
@@ -196,15 +237,14 @@ do
 			end
 		else
 			self:SetBackdrop(backdrop)
-			self:SetBackdropColor(0,0,0,1)
+			self:SetBackdropColor(0, 0, 0, 1)
 		end
-
+		-- Set textures
 		self.widgets.bars.absorb:SetStatusBarTexture(config.texture)
 		self.widgets.textures.absorb:SetTexture(config.texture)
 		self.widgets.bars.timer:SetStatusBarTexture("Interface\\Buttons\\WHITE8x8")
-
 		-- Icon
-		self.widgets.textures.icon:SetTexCoord(0.07,0.93,0.07,0.93)
+		self.widgets.textures.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
 		if Tukui then
 			self.widgets.textures.icon:Point('TOPLEFT', self, 2, -2)
 			self.widgets.textures.icon:Point('BOTTOMLEFT', self, 2, 2)
@@ -212,52 +252,60 @@ do
 			self.widgets.textures.icon:SetPoint('TOPLEFT', self)
 			self.widgets.textures.icon:SetPoint('BOTTOMLEFT', self)
 		end
-
 		-- Absorb
-		self.widgets.textures.absorb:SetAllPoints()
 		if Tukui then
-			self.widgets.bars.absorb:Point('LEFT', 2, 0)
-			self.widgets.bars.absorb:Point('BOTTOM', 0, 2)
-			self.widgets.bars.absorb:Point('RIGHT', -2, 0)
-			self.widgets.bars.absorb:Point('TOP', 0, -2)
+			self.widgets.bars.absorb:Point('BOTTOMLEFT', 2, 2)
+			self.widgets.bars.absorb:Point('TOPRIGHT', -2, -2)
 		else
 			self.widgets.bars.absorb:SetAllPoints()
 		end
-		self.widgets.bars.absorb:SetScript('OnValueChanged', OnAbsorbValueChanged)
-		self.widgets.bars.absorb:SetMinMaxValues(0, 1)
-		self.widgets.bars.absorb:SetValue(.8)
-
 		-- timer
 		self.widgets.bars.timer:SetAllPoints(self.widgets.bars.absorb)
 		self.widgets.bars.timer:SetStatusBarColor(unpack(config.timercolor))
 		self.widgets.bars.timer:SetMinMaxValues(0, 1)
 		self.widgets.bars.timer:SetValue(.8)
+		-- fontstrings
+		--if Tukui then
+		--	self.widgets.fontstrings.name:Point('LEFT', self.widgets.bars.timer, config.font.spacing, 0)
+		--else
+		--	self.widgets.fontstrings.name:SetPoint('LEFT', self.widgets.bars.timer, config.font.spacing, 0)
+		--end
+		self.widgets.fontstrings.name:SetPoint('CENTER', UIParent)
 	end
-end
-function barPrototype:UpdateSize(height)
-	if height then
-		self.height = height
-	end
-	if Tukui then
-		self:Height(self.height)
-	else
-		self:SetHeight(self.height)
-	end
-
-	-- Repoint absorb bar if icon texture is hidden
-	if self.widgets.textures.icon:GetTexture() then
-		if Tukui then 
-			self.widgets.textures.icon:Width(self.height-4)
-			self.widgets.bars.absorb:Point('LEFT', self.widgets.textures.icon, 'RIGHT', 1, 0)
-		else
-			self.widgets.textures.icon:SetWidth(self.height)
-			self.widgets.bars.absorb:SetPoint('LEFT', self.widgets.textures.icon, 'RIGHT', 1, 0)
+	function barPrototype:UpdateHeight(height)
+		ns:Debug(self:GetID(), 'UpdateHeight', self.height, height)
+		if height then
+			self.height = height
 		end
-	else
-		if Tukui then 
-			self.widgets.bars.absorb:Point('LEFT', 2, 0)
+		if Tukui then
+			self:Height(self.height)
 		else
-			self.widgets.bars.absorb:SetPoint('LEFT')
+			self:SetHeight(self.height)
+		end	
+		self.widgets.bars.absorb:ClearAllPoints()
+		if Tukui then
+			self.widgets.bars.absorb:Point('BOTTOM', 0, 2)
+			self.widgets.bars.absorb:Point('RIGHT', -2, 0)
+			self.widgets.bars.absorb:Point('TOP', 0, -2)
+		else
+			self.widgets.bars.absorb:SetPoint('BOTTOM')
+			self.widgets.bars.absorb:SetPoint('RIGHT')
+			self.widgets.bars.absorb:SetPoint('TOP')
+		end
+		if self.widgets.textures.icon:IsShown() then
+			if Tukui then
+				self.widgets.textures.icon:Width(self.height - 4)
+				self.widgets.bars.absorb:Point('LEFT', self.widgets.textures.icon, 'RIGHT', 1, 0)
+			else
+				self.widgets.textures.icon:SetWidth(self.height)
+				self.widgets.bars.absorb:SetPoint('LEFT', self.widgets.textures.icon, 'RIGHT', 1, 0)
+			end
+		else
+			if Tukui then 
+				self.widgets.bars.absorb:Point('LEFT', 2, 0)
+			else
+				self.widgets.bars.absorb:SetPoint('LEFT')
+			end
 		end
 	end
 end
@@ -267,6 +315,7 @@ widgets.barPrototype = barPrototype
 local newBar
 do
 	local function UpdateTexCoords(self, value)
+		ns:Debug(self.__owner:GetID(), 'UpdateTexCoords', value)
 		local min, max = self:GetMinMaxValues()
 		self:GetStatusBarTexture():SetTexCoord(0, (value - min) / (max - min), 0, 1)
 	end
@@ -277,58 +326,44 @@ do
 			bar:Show()
 		else
 			bar = setmetatable(CreateFrame("Frame", name..'AddOnBar'..i, UIParent), barPrototype_meta)
-
+			bar:SetID(i)
+			-- Anchor to container
 			bar:SetPoint('LEFT', container)
 			bar:SetPoint('RIGHT', container)
-
+			-- Setup tables
 			bar.widgets = {}
-			bar.widgets.frames = {}
-			bar.widgets.bars = {}
-			bar.widgets.textures = {}
-			bar.widgets.fontstrings = {}
-			
-			local iconFrame = CreateFrame("Frame", name..'AddOnBar'..i..'IconFrame', bar)
-			bar.widgets.frames.icon = iconFrame
-			
-			local icon = iconFrame:CreateTexture(nil, "ARTWORK")
-			bar.widgets.textures.icon = icon
-			
-			local absorb = CreateFrame("StatusBar", name..'AddOnBar'..i..'AbsorbStatusBar', bar)
-			hooksecurefunc(absorb, "SetValue", UpdateTexCoords)
-			bar.widgets.bars.absorb = absorb
-			
-			local bg = absorb:CreateTexture(nil, "BACKGROUND")	
-			bar.widgets.textures.absorb = bg
-			
-			local timer = CreateFrame("StatusBar", name..'AddOnBar'..i..'TimerStatusBar', absorb)
-			hooksecurefunc(absorb, "SetValue", UpdateTexCoords)
-			bar.widgets.bars.timer = timer
-			
-			-- texts
-			local count = SetFontString(iconFrame, config.font.path, config.font.size)
-			bar.widgets.fontstrings.count = count
-			
-			local spell = SetFontString(absorb, config.font.path, config.font.size)
-			bar.widgets.fontstrings.spell = spell
-
-			local name = SetFontString(absorb, config.font.path, config.font.size)
-			bar.widgets.fontstrings.name = name
-			
-			local absorb = SetFontString(absorb, config.font.path, config.font.size)
-			bar.widgets.fontstrings.absorb = absorb
-
+			local widgets = bar.widgets
+			widgets.frames = {}
+			local frames = widgets.frames
+			widgets.bars = {}
+			local bars = widgets.bars
+			widgets.textures = {}
+			local textures = widgets.textures
+			widgets.fontstrings = {}
+			local fontstrings = widgets.fontstrings
+			-- Add elements to tables
+			frames.icon =	CreateFrame("Frame", name..'AddOnBar'..i..'IconFrame', bar)
+				textures.icon =			frames.icon:CreateTexture(nil, "ARTWORK")
+				fontstrings.count =		SetFontString(frames.icon, config.font.path, config.font.size)
+			bars.absorb =	CreateFrame("StatusBar", name..'AddOnBar'..i..'AbsorbStatusBar', bar)
+				hooksecurefunc(bars.absorb, "SetValue", UpdateTexCoords)
+				textures.absorb =		bars.absorb:CreateTexture(nil, "BACKGROUND")
+				fontstrings.spell =		SetFontString(bars.absorb, config.font.path, config.font.size)
+				fontstrings.name =		SetFontString(bars.absorb, config.font.path, config.font.size)
+				fontstrings.absorb = 	SetFontString(bars.absorb, config.font.path, config.font.size)
+			bars.timer =	CreateFrame("StatusBar", name..'AddOnBar'..i..'TimerStatusBar', bars.absorb)
 			-- Set __owner field on each widget to bar
-			for key, tbl in next, bar.widgets do
+			for key, tbl in next, widgets do
 				for key, object in next, tbl do
 					object.__owner = bar
 				end
 			end
-			
 			bar:Style()		
 			i = i + 1
 		end
 		bar.unlocked = false
-		bar:UpdateSize(height)		
+		bar:UpdateHeight(height)
+		bar:InitAbsorbBar()		
 		tinsert(activeBars, bar)
 		return bar
 	end
@@ -339,7 +374,6 @@ function ns:UpdateAllBars()
 	self:SortShields()
 end
 ------------------------------------------------------------------------------
--- code for moving the frames :)
 local anchor = CreateFrame('Frame', name..'AddOnAnchorFrame', container)
 anchor:SetAlpha(0)
 anchor:SetHeight(config.height)
@@ -390,8 +424,15 @@ SlashCmdList[name:upper()..'ADDON'] = function()
 			local bar = activeBars[i] or newBar(config.height)
 			activeBars[i] = bar
 			bar:SetUnlocked()
+
+			local id = ns.shieldsIndex[math.random(#ns.shieldsIndex)]
+			local name, _, icon = GetSpellInfo(id)
+			testObject.id = id
+			testObject.name = name
+			testObject.icon = icon
 			testObject.expirationTime = GetTime() + (i * 2)
 			testObject.cur = (testObject.max / 5) * (6 - i)
+
 			bar:SetData(testObject)
 			bar:SetStackCount()
 			bar:SetAbsorbValue()

@@ -6,6 +6,7 @@ local config = {
 	showicon = true,
 	tukuishadows = true,
 	tukuiskinning = true,
+	smoothbar = true,
 	texture = [[Interface\TargetingFrame\UI-StatusBar]],
 	font = {
 		path = [[Fonts\ARIALN.TTF]], 

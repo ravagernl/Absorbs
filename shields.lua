@@ -24,7 +24,7 @@ local shields = {
 	-- Mage stuff
 	[11426] = true,	-- Ice Barrier
 	[543] = true,	-- Mage Ward
-	
+
 	-- non class
 	[96988] = true,	-- Stay of Execution (25800 damage)
 	[29719] = true,	-- Greater Shielding (4k damage on shield)
@@ -87,7 +87,11 @@ function ns:UpdateFromTooltipByGUID(guid, id, amount, absorbType, icon, count, d
 	local tbl = activeShields[guid..'_'..id]
 	if not tbl then return end
 	if amount > tbl.max then
+		tbl.maxChanged = true
 		tbl.max = 0 + amount
+	end
+	if tbl.cur or 0 > amount or 0 then
+		tbl.curChanged = true
 	end
 	tbl.cur = 0 + amount
 	tbl.absorbType = absorbType and absorbType:lower() or nil
@@ -119,6 +123,7 @@ function ns:UpdateMax(unit, guid, id, name, type, amount, removed)
 		tbl.type = type
 		tbl.max = 0 + amount
 		tbl.cur = 0 + amount
+		tbl.maxChanged = true
 		tinsert(active, tbl)
 		activeShields[guid..'_'..id] = tbl
 	end
