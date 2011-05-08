@@ -205,11 +205,6 @@ do
 		tinsert(availableBars, self)
 		self:Hide()
 	end
-	function barPrototype:InitAbsorbBar()
-		self.widgets.bars.absorb:SetMinMaxValues(0, 1)
-		self.widgets.bars.absorb:SetScript('OnValueChanged', OnAbsorbValueChanged)
-		self.widgets.bars.absorb:SetValue(.5)
-	end
 	function barPrototype:SetAbsorbValue()
 		if self.data.maxChanged or self.data.curChanged then
 			if self.data.maxChanged then
@@ -310,6 +305,7 @@ do
 		else
 			self.widgets.bars.absorb:SetAllPoints()
 		end
+		self.widgets.bars.absorb:SetScript('OnValueChanged', OnAbsorbValueChanged)
 		-- timer
 		self.widgets.bars.timer:SetPoint('LEFT', self.widgets.bars.absorb)
 		self.widgets.bars.timer:SetPoint('BOTTOM', self.widgets.bars.absorb)
@@ -425,7 +421,6 @@ do
 		end
 		bar:SetLocked()
 		bar:UpdateHeight(height)
-		bar:InitAbsorbBar()		
 		tinsert(activeBars, bar)
 		return bar
 	end
@@ -436,8 +431,7 @@ function ns:UpdateAllBars()
 	self:SortShields()
 	if ns:HasActiveShields() then
 		local prev = container
-		for i = 1,  ns:GetNumShields() do
-			ns:Debug('bar ', i)
+		for i = 1, ns:GetNumShields() do
 			local bar = activeBars[i] or newBar(config.height)
 			bar:SetData(ns:GetShield(i))
 			bar:SetStackCount()
@@ -457,17 +451,12 @@ function ns:UpdateAllBars()
 			end
 			prev = bar
 		end
-		local height = ((config.height + spacing) * (#activeBars)) - spacing
-		if Tukui then
-			container:Height(height)
-		else
-			container:SetHeight(height)
-		end
 	end
 	-- remove leftover bars.
 	for i = ns:GetNumShields() + 1, #activeBars do
 		local bar = activeBars[i]
 		bar:Delete()
+		activeBars[i] = nil
 	end
 end
 ------------------------------------------------------------------------------
@@ -481,12 +470,10 @@ else
 	anchor:SetPoint('BOTTOMLEFT')
 	anchor:SetPoint('BOTTOMRIGHT')
 end
-
 local sbar = anchor:CreateTexture(nil, 'ARTWORK')
 sbar:SetTexture(config.texture)
 sbar:SetVertexColor(0,6/16,9/16)
 anchor.sbar = sbar
-
 if Tukui then
 	anchor:SetTemplate()
 	if config.tukuishadows then
@@ -499,7 +486,6 @@ else
 	anchor:SetBackdropColor(0,0,0,1)
 	sbar:SetAllPoints()
 end
-
 local text = SetFontString(anchor, config.font.path, config.font.size, 'CENTER')
 text:SetAllPoints()
 text:SetText(name.."AddOn unlocked.")
@@ -552,12 +538,6 @@ SlashCmdList[name:upper()..'ADDON'] = function()
 			end
 			prev = bar
 		end
-		local height = ((config.height + spacing) * (#activeBars + 1)) - spacing
-		if Tukui then
-			container:Height(height)
-		else
-			container:SetHeight(height)
-		end
 	else
 		ns.moving = false
 		anchor:EnableMouse(false)
@@ -566,6 +546,15 @@ SlashCmdList[name:upper()..'ADDON'] = function()
 			bar:SetLocked()
 			bar:Delete()
 			activeBars[i] = nil
+		end
+		-- Force updating the statusbar values
+		if ns:HasActiveShields() then
+			local prev = container
+			for i = 1, ns:GetNumShields() do
+				local shield = ns:GetShield(i)
+				shield.maxChanged = true
+				shield.curChanged = true
+			end
 		end
 		ns:UpdateAllBars()
 	end
