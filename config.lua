@@ -1,3 +1,4 @@
+local name, ns = ...
 local config = {
 	height = 24,
 	width = 260,
@@ -5,11 +6,12 @@ local config = {
 	growup = true,
 	showicon = true,
 	tukuishadows = true,
-	tukuiskinning = true,
+	tukuiskinning = false,
 	smoothbar = true,
 	scaletime = 10, -- For people that want timers that tick down evenly, set this to a duration (10 suggested)
 	timerheight = 2,
-	texture = [[Interface\TargetingFrame\UI-StatusBar]],
+	--texture = [[Interface\TargetingFrame\UI-StatusBar]],
+	texture = [[Interface\AddOns\]]..name..[[\media\tex]],
 	font = {
 		path = [[Fonts\ARIALN.TTF]], 
 		size = 12,
@@ -17,13 +19,12 @@ local config = {
 		decimals = 1,
 	},
 	timercolor = {1, 1, 1, .1},
-	barcolor = {.3, .3, .3},
-	barbgcolor = {.1, .1, .1},
+	barcolor = {.3, .6, .1},
+	barbgcolor = {.15, .3, .05},
 	classcolorbars = false,
 	shortspell = true,
 	shortname = true,
 	hidespell = false,
 	hidename = false,
 }
-local name, ns = ...
 ns.config = config

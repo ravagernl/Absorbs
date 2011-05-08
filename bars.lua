@@ -4,10 +4,11 @@ ns.widgets = ns.widgets or {}
 local widgets = ns.widgets
 local config = ns.config
 local spacing = config.spacing + 2
+local Tukui = config.tukuiskinning and (ElvUI or Tukui)
 ------------------------------------------------------------------------------
 local GetTime = GetTime
 local unpack = unpack
-local tinsert, tremove, wipe, next = tinsert, tremove, wipe, next
+local tinsert, tremove, wipe, next, floor = tinsert, tremove, wipe, next, math.floor
 local UnitClass, UnitName = UnitClass, UnitName
 ------------------------------------------------------------------------------
 -- Partially stolen from LibCandyBar-3.0 and LibBars-1.0 :)
@@ -38,13 +39,13 @@ do
 	local function round(num, idp)
 		if idp and idp > 0 then
 			local mult = 10^idp
-			return math.floor(num * mult + 0.5) / mult
+			return floor(num * mult + 0.5) / mult
 		end
-		return math.floor(num + 0.5)
+		return floor(num + 0.5)
 	end
 	function shortnum(num)
 		if num < 5000 then
-			return num
+			return floor(num + .5)
 		elseif num < 1e6 then
 			return round(num/1e3,config.font.decimals).."k"
 		else
@@ -179,7 +180,6 @@ end
 do
 	local function OnAbsorbValueChanged(bar, value)
 		local min, max = bar:GetMinMaxValues()
-		ns:Debug(bar.__owner:GetID(), 'OnAbsorbValueChanged', min, max, value)
 		bar.__owner.widgets.fontstrings.absorb:SetFormattedText("%s/%s", shortnum(value), shortnum(max))
 	end
 	local function OnTimerUpdate(self, elapsed, ...)
@@ -245,7 +245,7 @@ do
 			if config.classcolorbars then
 				self:SetAbsorbColor(unpack(color))
 			end
-			if unit ~= 'player' or ns.moving then
+			if unit ~= 'player' then
 				name = config.shortname and utf8sub(UnitName(unit), 8, true) or UnitName(unit)
 				name = colornames[class]:format(name)
 			end
@@ -254,7 +254,6 @@ do
 		self:SetIcon()
 	end
 	function barPrototype:SetTimer()
-		ns:Debug(self:GetID(), 'SetTimer')
 		if self.data.timeChanged then
 			self.data.timeChanged = false
 			local max = config.scaletime 
@@ -285,7 +284,6 @@ do
 		self:UpdateHeight()
 	end
 	function barPrototype:SetStackCount()
-		ns:Debug(self:GetID(), 'SetStackCount', self.data.count)
 		self.widgets.fontstrings.count:SetText(self.data.count > 1 and self.data.count or '')
 	end
 	local SmoothBar
@@ -358,6 +356,7 @@ do
 			self.widgets.textures.icon:SetPoint('BOTTOMLEFT', self)
 		end
 		-- Absorb
+		self.widgets.textures.absorb:SetAllPoints()
 		if Tukui then
 			self.widgets.bars.absorb:Point('BOTTOMLEFT', 2, 2)
 			self.widgets.bars.absorb:Point('TOPRIGHT', -2, -2)
@@ -438,7 +437,7 @@ widgets.barPrototype = barPrototype
 local newBar
 do
 	local function UpdateTexCoords(self, value)
-		ns:Debug(self.__owner:GetID(), 'UpdateTexCoords', value)
+		--ns:Debug(self.__owner:GetID(), 'UpdateTexCoords', value)
 		local min, max = self:GetMinMaxValues()
 		self:GetStatusBarTexture():SetTexCoord(0, (value - min) / (max - min), 0, 1)
 	end
