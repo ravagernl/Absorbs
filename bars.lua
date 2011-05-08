@@ -73,6 +73,57 @@ do
 		end
 	end
 end
+local utf8sub = function(string, i, dots)
+	local bytes = string:len()
+	if (bytes <= i) then
+		return string
+	else
+		local len, pos = 0, 1
+		while(pos <= bytes) do
+			len = len + 1
+			local c = string:byte(pos)
+			if c > 240 then
+				pos = pos + 4
+			elseif c > 225 then
+				pos = pos + 3
+			elseif c > 192 then
+				pos = pos + 2
+			else
+				pos = pos + 1
+			end
+			if (len == i) then break end
+		end
+
+		if (len == i and pos <= bytes) then
+			return string:sub(1, pos - 1)..(dots and "..." or "")
+		else
+			return string
+		end
+	end
+end
+-- Credit to Satrina (SBF)
+local shortName
+do
+	local strTmp = CreateFrame("Button")
+	shortName = function(name)
+		local colon = false
+		strTmp:SetFormattedText("")
+		for word in name:gmatch("[^%s]+") do
+			if colon then
+				strTmp:SetFormattedText("%s%s", strTmp:GetText() or "", word)
+			elseif tonumber(word) then
+				strTmp:SetFormattedText("%s%s", strTmp:GetText() or "", word)
+			else
+				strTmp:SetFormattedText("%s%s", strTmp:GetText() or "", word:match("^."))
+			end
+			if word:find("[:]") then
+				colon = true
+				strTmp:SetFormattedText("%s:", strTmp:GetText())
+			end
+		end
+		return strTmp:GetText()
+	end
+end
 local function SetFontString(parent, fontName, fontHeight)
 	local fontStyle = fontHeight == 8 and "MONOCHROME,OUTLINE" or "OUTLINE"
 	local fs = parent:CreateFontString(nil, "OVERLAY")
@@ -137,8 +188,7 @@ do
 		if not (self.data and object and self.data == object) then
 			ns:Debug(debugLine, self:GetID(), 'SetData')
 			self.data = object
-			self:SetSpell()
-			self:SetUnit()
+			self:SetSpellAndName()
 			self:SetTimer()
 			return true
 		end
@@ -181,9 +231,27 @@ do
 		self.widgets.bars.absorb:SetStatusBarColor(r, g, b)
 		self.widgets.textures.absorb:SetVertexColor(r/3, g/3, b/3)
 	end
-	function barPrototype:SetSpell()
-		ns:Debug(self:GetID(), 'SetSpell', self.data.name)
-		self.widgets.fontstrings.spell:SetText(self.data.name)
+	function barPrototype:SetSpellAndName()
+		local spell = config.hidespell and '' or config.shortspell and shortName(self.data.name) or self.data.name
+		local name = ''
+		local unit = self.data.unit
+		if unit and unit ~= '' then
+			local _, class = UnitClass(unit)
+			local color
+			if self.unlocked then
+				color = randomcolors[math.random(#randomcolors)]
+			else
+				color = colors[class]
+			end
+			if config.classcolorbars then
+				self:SetAbsorbColor(unpack(color))
+			end
+			if unit ~= 'player' or ns.moving then
+				name = config.shortnames and utf8sub(UnitName(unit), 8, true) or UnitName(unit)
+				name = colornames[class]:format(name)
+			end
+		end
+		self.widgets.fontstrings.spellandname:SetFormattedText('%s%s', spell, name)
 		self:SetIcon()
 	end
 	function barPrototype:SetTimer()
@@ -208,29 +276,6 @@ do
 	function barPrototype:SetStackCount()
 		ns:Debug(self:GetID(), 'SetStackCount', self.data.count)
 		self.widgets.fontstrings.count:SetText(self.data.count > 1 and self.data.count or '')
-	end
-	function barPrototype:SetUnit()
-		ns:Debug(self:GetID(), 'SetUnit', self.data.unit)
-		local unit = self.data.unit
-		if unit and unit ~= '' then
-			local _, class = UnitClass(unit)
-			local color
-			if self.unlocked then
-				color = randomcolors[math.random(#randomcolors)]
-			else
-				color = colors[class]
-			end
-			self:SetAbsorbColor(unpack(color))
-			if unit == 'player' then
-				self.widgets.fontstrings.name:SetText('')
-			else
-				local colorname = colornames[class]:format(UnitName(unit))
-				self.widgets.fontstrings.name:SetText(colorname)
-			end
-		else
-			self.widgets.fontstrings.name:SetText('')
-			self:SetAbsorbColor(0, 0, 0)
-		end
 	end
 	function barPrototype:Style()
 		ns:Debug(debugLine, self:GetID(), 'Style')
@@ -359,8 +404,7 @@ do
 			bars.absorb =	CreateFrame("StatusBar", name..'AddOnBar'..i..'AbsorbStatusBar', bar)
 				hooksecurefunc(bars.absorb, "SetValue", UpdateTexCoords)
 				textures.absorb =		bars.absorb:CreateTexture(nil, "BACKGROUND")
-				fontstrings.spell =		SetFontString(bars.absorb, config.font.path, config.font.size)
-				fontstrings.name =		SetFontString(bars.absorb, config.font.path, config.font.size)
+				fontstrings.spellandname = SetFontString(bars.absorb, config.font.path, config.font.size)
 				fontstrings.absorb = 	SetFontString(bars.absorb, config.font.path, config.font.size)
 			bars.timer =	CreateFrame("StatusBar", name..'AddOnBar'..i..'TimerStatusBar', bars.absorb)
 			-- Set __owner field on each widget to bar
