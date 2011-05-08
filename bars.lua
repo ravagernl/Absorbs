@@ -182,12 +182,18 @@ do
 		ns:Debug(bar.__owner:GetID(), 'OnAbsorbValueChanged', min, max, value)
 		bar.__owner.widgets.fontstrings.absorb:SetFormattedText("%s/%s", shortnum(value), shortnum(max))
 	end
+	local function OnTimerUpdate(self, elapsed, ...)
+		local left = self.__owner.data.expirationTime - GetTime()
+		self:SetValue(left)
+		if config.scaletime and left < self.max then
+			self:SetAlpha(1)
+		end
+	end
 	function barPrototype:SetData(object)
 		if not (self.data and object and self.data == object) then
 			ns:Debug(debugLine, self:GetID(), 'SetData')
 			self.data = object
 			self:SetSpellAndName()
-			self:SetTimer()
 			return true
 		end
 		return false
@@ -249,7 +255,20 @@ do
 	end
 	function barPrototype:SetTimer()
 		ns:Debug(self:GetID(), 'SetTimer')
-		self.widgets.bars.timer:Show()
+		if self.data.timeChanged then
+			self.data.timeChanged = false
+			local max = config.scaletime 
+				and math.min(config.scaletime, self.data.duration) 
+				or self.data.duration
+			self.widgets.bars.timer.max = max	
+			local left = self.data.expirationTime - GetTime()
+			self.widgets.bars.timer:SetMinMaxValues(0, max)
+			self.widgets.bars.timer:SetValue(left)
+			self.widgets.bars.timer:Show()
+			if config.scaletime and left > max then
+				self.widgets.bars.timer:SetAlpha(0)
+			end
+		end
 	end
 	function barPrototype:SetIcon()
 		self.widgets.textures.icon:SetTexture(self.data.icon)
@@ -310,10 +329,12 @@ do
 		self.widgets.bars.timer:SetPoint('LEFT', self.widgets.bars.absorb)
 		self.widgets.bars.timer:SetPoint('BOTTOM', self.widgets.bars.absorb)
 		self.widgets.bars.timer:SetPoint('RIGHT', self.widgets.bars.absorb)
+		self.widgets.bars.timer:Hide()
+		self.widgets.bars.timer:SetScript('OnUpdate', OnTimerUpdate)
 		if Tukui then
-			self.widgets.bars.timer:Height(1)
+			self.widgets.bars.timer:Height(config.timerheight or 1)
 		else
-			self.widgets.bars.timer:SetHeight(1)
+			self.widgets.bars.timer:SetHeight(config.timerheight or 1)
 		end
 		self.widgets.bars.timer:SetStatusBarColor(unpack(config.timercolor))
 		self.widgets.bars.timer:SetMinMaxValues(0, 1)
@@ -436,17 +457,18 @@ function ns:UpdateAllBars()
 			bar:SetData(ns:GetShield(i))
 			bar:SetStackCount()
 			bar:SetAbsorbValue()
+			bar:SetTimer()
 			if Tukui then
 				if config.growup then
-					bar:Point('BOTTOM', prev, 'TOP', 0, spacing)
+					bar:Point('BOTTOM', prev, prev == container and 'BOTTOM' or 'TOP', 0, prev == container and 0 or spacing)
 				else
-					bar:Point('TOP', prev, 'BOTTOM', 0, -spacing)
+					bar:Point('TOP', prev, prev == container and 'TOP' or 'BOTTOM', 0, prev == container and 0 or -spacing)
 				end
 			else
 				if config.growup then
-					bar:SetPoint('BOTTOM', prev, 'TOP', 0, spacing)
+					bar:SetPoint('BOTTOM', prev, prev == container and 'BOTTOM' or 'TOP', 0, prev == container and 0 or spacing)
 				else
-					bar:SetPoint('TOP', prev, 'BOTTOM', 0, -spacing)
+					bar:SetPoint('TOP', prev, prev == container and 'TOP' or 'BOTTOM', 0, prev == container and 0 or -spacing)
 				end
 			end
 			prev = bar
@@ -462,7 +484,6 @@ end
 ------------------------------------------------------------------------------
 local anchor = CreateFrame('Frame', name..'AddOnAnchorFrame', container)
 anchor:SetAlpha(0)
-anchor:SetHeight(config.height)
 if not config.growup then
 	anchor:SetPoint('TOPLEFT')
 	anchor:SetPoint('TOPRIGHT')
@@ -470,26 +491,6 @@ else
 	anchor:SetPoint('BOTTOMLEFT')
 	anchor:SetPoint('BOTTOMRIGHT')
 end
-local sbar = anchor:CreateTexture(nil, 'ARTWORK')
-sbar:SetTexture(config.texture)
-sbar:SetVertexColor(0,6/16,9/16)
-anchor.sbar = sbar
-if Tukui then
-	anchor:SetTemplate()
-	if config.tukuishadows then
-		anchor:CreateShadow()
-	end
-	sbar:Point('BOTTOMLEFT', 2, 2)
-	sbar:Point('TOPRIGHT', -2, -2)
-else
-	anchor:SetBackdrop(backdrop)
-	anchor:SetBackdropColor(0,0,0,1)
-	sbar:SetAllPoints()
-end
-local text = SetFontString(anchor, config.font.path, config.font.size, 'CENTER')
-text:SetAllPoints()
-text:SetText(name.."AddOn unlocked.")
-anchor.text = text
 widgets.anchor = anchor
 ------------------------------------------------------------------------------
 -- slash command
@@ -499,10 +500,10 @@ SlashCmdList[name:upper()..'ADDON'] = function()
 	if not ns.moving then
 		ns.moving = true
 		anchor:EnableMouse(true)
-		anchor:SetAlpha(1)
+		anchor:SetAlpha(.5)
 		anchor:SetScript("OnMouseDown", function(self) container:StartMoving() end)
 		anchor:SetScript("OnMouseUp", function(self) container:StopMovingOrSizing() end)
-		local prev = anchor
+		local prev = container
 		local max = testObject.max
 		for i = 1, 5 do
 			local bar = activeBars[i] or newBar(config.height)
@@ -525,18 +526,24 @@ SlashCmdList[name:upper()..'ADDON'] = function()
 			bar:SetAbsorbValue()
 			if Tukui then
 				if config.growup then
-					bar:Point('BOTTOM', prev, 'TOP', 0, spacing)
+					bar:Point('BOTTOM', prev, prev == container and 'BOTTOM' or 'TOP', 0, prev == container and 0 or spacing)
 				else
-					bar:Point('TOP', prev, 'BOTTOM', 0, -spacing)
+					bar:Point('TOP', prev, prev == container and 'TOP' or 'BOTTOM', 0, prev == container and 0 or -spacing)
 				end
 			else
 				if config.growup then
-					bar:SetPoint('BOTTOM', prev, 'TOP', 0, spacing)
+					bar:SetPoint('BOTTOM', prev, prev == container and 'BOTTOM' or 'TOP', 0, prev == container and 0 or spacing)
 				else
-					bar:SetPoint('TOP', prev, 'BOTTOM', 0, -spacing)
+					bar:SetPoint('TOP', prev, prev == container and 'TOP' or 'BOTTOM', 0, prev == container and 0 or -spacing)
 				end
 			end
 			prev = bar
+			local height = ((config.height + spacing) * #activeBars) - spacing
+			if Tukui then
+				anchor:Height(height)
+			else
+				anchor:SetHeight(height)
+			end
 		end
 	else
 		ns.moving = false

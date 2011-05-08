@@ -99,7 +99,10 @@ function ns:UpdateFromTooltipByGUID(guid, id, amount, absorbType, icon, count, d
 	tbl.count = min(1, 0 + count)
 	tbl.debuffType = debuffType
 	tbl.duration = 0 + duration
-	tbl.expirationTime = expirationTime
+	if tbl.expirationTime ~= expirationTime then
+		tbl.expirationTime = expirationTime
+		tbl.timeChanged = true
+	end
 end
 
 function ns:UpdateMax(unit, guid, id, name, type, amount, removed)
