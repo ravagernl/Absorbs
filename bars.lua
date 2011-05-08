@@ -3,6 +3,7 @@ local name, ns = ...
 ns.widgets = ns.widgets or {}
 local widgets = ns.widgets
 local config = ns.config
+local spacing = config.spacing + 2
 ------------------------------------------------------------------------------
 local GetTime = GetTime
 local unpack = unpack
@@ -25,9 +26,9 @@ local container = CreateFrame('Frame', name..'AddOnContainerFrame', UIParent)
 container:SetClampedToScreen(true)
 container:SetMovable(true)
 if Tukui then
-	container:Size(config.width, config.height + config.spacing)
+	container:Size(config.width, config.height + spacing)
 else
-	container:SetSize(config.width, config.height + config.spacing)
+	container:SetSize(config.width, config.height + spacing)
 end
 container:SetPoint('CENTER', 0, -200)
 widgets.container = container
@@ -425,20 +426,20 @@ SlashCmdList[name:upper()..'ADDON'] = function()
 			bar:SetAbsorbValue()
 			if Tukui then
 				if config.growup then
-					bar:Point('BOTTOM', prev, 'TOP', 0, config.spacing)
+					bar:Point('BOTTOM', prev, 'TOP', 0, spacing)
 				else
-					bar:Point('TOP', prev, 'BOTTOM', 0, -config.spacing)
+					bar:Point('TOP', prev, 'BOTTOM', 0, -spacing)
 				end
 			else
 				if config.growup then
-					bar:Point('BOTTOM', prev, 'TOP', 0, config.spacing)
+					bar:Point('BOTTOM', prev, 'TOP', 0, spacing)
 				else
-					bar:Point('TOP', prev, 'BOTTOM', 0, -config.spacing)
+					bar:Point('TOP', prev, 'BOTTOM', 0, -spacing)
 				end
 			end
 			prev = bar
 		end
-		local height = ((config.height + config.spacing) * (#activeBars + 1)) - config.spacing
+		local height = ((config.height + spacing) * (#activeBars + 1)) - spacing
 		if Tukui then
 			container:Height(height)
 		else

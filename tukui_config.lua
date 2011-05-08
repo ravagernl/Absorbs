@@ -11,5 +11,3 @@ if Tukui then
 	config.font.size = T.Duffed and C.unitframes.fontsize or 12
 	config.texture = C.media.normTex
 end
--- Adjust as backdropinset is = -1
-config.spacing = config.spacing+2
