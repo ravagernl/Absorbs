@@ -18,7 +18,7 @@ local config = {
 		spacing = 3,
 		decimals = 1,
 	},
-	timercolor = {1, 1, 1, .1},
+	timercolor = {0, 0, 0, .5},
 	barcolor = {.3, .6, .1},
 	barbgcolor = {.15, .3, .05},
 	classcolorbars = true,
