@@ -83,7 +83,7 @@ end
 function ns:IsTrackableShield(id)
 	return shields[id]
 end
-function ns:UpdateFromTooltipByGUID(guid, id, amount, absorbType, icon, count, debuffType, duration, expirationTime)
+function ns:UpdateFromTooltipByGUID(guid, id, amount, icon, count, debuffType, duration, expirationTime)
 	local tbl = activeShields[guid..'_'..id]
 	if not tbl then return end
 	if amount > tbl.max then
@@ -94,7 +94,6 @@ function ns:UpdateFromTooltipByGUID(guid, id, amount, absorbType, icon, count, d
 		tbl.cur = 0 + amount
 		tbl.curChanged = true
 	end
-	tbl.absorbType = absorbType and absorbType:lower() or nil
 	tbl.icon = icon
 	tbl.count = min(1, 0 + count)
 	tbl.debuffType = debuffType
