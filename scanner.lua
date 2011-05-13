@@ -29,14 +29,16 @@ function ns:UpdateFromTooltips()
 		if ns:IsTrackableShield(id) and sourceUnit ~= nil and sourceUnit ~= '' then
 			--self:Debugf('Scanning: %q from %q at index %d', buffname, sourceUnit, i)
 			local text = GetBuffText(sourceUnit, i)
-			local amount
-			for i=1, #absorbpatterns do
-				amount = text:match(absorbpatterns[i])
-				if amount then
-					amount = 0 + amount
-					--self:Debugf('Found: text: %q, amount: %q(%s), text, amount, type(amount))
-					ns:UpdateFromTooltipByGUID(UnitGUID(sourceUnit), id, amount, icon, count, debuffType, duration, expirationTime)
-					break
+			if text then
+				local amount
+				for i=1, #absorbpatterns do
+					amount = text:match(absorbpatterns[i])
+					if amount then
+						amount = 0 + amount
+						--self:Debugf('Found: text: %q, amount: %q(%s), text, amount, type(amount))
+						ns:UpdateFromTooltipByGUID(UnitGUID(sourceUnit), id, amount, icon, count, debuffType, duration, expirationTime)
+						break
+					end
 				end
 			end
 		end
