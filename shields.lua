@@ -58,7 +58,7 @@ ns.activeShields = activeShields
 do
 	local sortFunc = function(a,b)
 		-- Sometimes it doesn't give along a or b
-		if not a and b then return end
+		if not a or not b then return end
 		return a.max - a.cur < b.max - b.cur
 	end
 	function ns:SortShields()
