@@ -89,7 +89,7 @@ function ns:IsTrackableShield(id)
 end
 function ns:UpdateFromTooltipByGUID(guid, id, amount, icon, count, debuffType, duration, expirationTime)
 	local tbl = activeShields[guid..'_'..id]
-	if not tbl then return end
+	assert(tbl, 'guid '..guid..' with id '..id..' not found')
 	if amount > tbl.max then
 		tbl.maxChanged = true
 		tbl.max = 0 + amount
@@ -101,9 +101,10 @@ function ns:UpdateFromTooltipByGUID(guid, id, amount, icon, count, debuffType, d
 	tbl.icon = icon
 	tbl.count = min(1, 0 + count)
 	tbl.debuffType = debuffType
-	tbl.duration = 0 + duration
-	if tbl.expirationTime ~= expirationTime then
+
+	if tbl.expirationTime ~= expirationTime or tbl.duration ~= duration then
 		tbl.expirationTime = expirationTime
+		tbl.duration = 0 + duration
 		tbl.timeChanged = true
 	end
 end

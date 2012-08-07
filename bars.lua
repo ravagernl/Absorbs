@@ -223,7 +223,8 @@ do
 				self.widgets.bars.absorb:SetValue(self.data.cur)
 				self.data.curChanged = false
 			end
-		end		
+		end
+		
 	end
 	function barPrototype:SetAbsorbColor(r, g, b)
 		ns:Debug(self:GetID(), 'SetAbsorbColor', r, g, b)
@@ -250,6 +251,7 @@ do
 	end
 	function barPrototype:SetTimer()
 		if self.data.timeChanged then
+			ns:Debug(self:GetID(), 'SetTime', self.data.duration, self.data.expirationTime)
 			self.data.timeChanged = false
 			local max = config.scaletime 
 				and math.min(config.scaletime, self.data.duration) 

@@ -67,7 +67,7 @@ evtframe:SetScript("OnEvent", function(self, event, timestamp, type, hideCaster,
 	-- Aura applied or removed
 	if type == 'SPELL_AURA_APPLIED' or
 		hasshields and (
-			type == 'SPELL_AURA_REFRESHED' or
+			type == 'SPELL_AURA_REFRESH' or
 			type == 'SPELL_AURA_REMOVED'
 		)
 	then
