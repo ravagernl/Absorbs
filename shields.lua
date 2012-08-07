@@ -118,13 +118,11 @@ function ns:UpdateMax(guid, id, name, type, amount, removed)
 		tremove(active, index)
 		tinsert(cache, tbl)
 		activeShields[guid..'_'..id] = nil
-		
 	else
 		-- Get a table from the cache or a new table
 		local tbl = tremove(cache)
 		if tbl then wipe(tbl) else tbl = {} end
 
-		tbl.unit = unit
 		tbl.guid = guid
 		tbl.id = id
 		tbl.name = name
