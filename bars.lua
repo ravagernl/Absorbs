@@ -233,20 +233,17 @@ do
 	function barPrototype:SetSpellAndName()
 		local spell = config.hidespell and '' or config.shortspell and shortName(self.data.name) or self.data.name
 		local _, class, _, _, _, name, realm = GetPlayerInfoByGUID(self.data.guid)
-		if class and not config.hidename then
-			local color
-			if self.unlocked then
-				color = randomcolors[math.random(#randomcolors)]
-			else
-				color = colors[class]
-			end
-			if config.classcolorbars then
-				self:SetAbsorbColor(unpack(color))
-			end
-			if UnitGUID('player') ~= self.data.guid then
-				name = config.shortname and utf8sub(name, 8, true) or name
-				name = colornames[class]:format(name)
-			end
+		if class and config.classcolorbars then
+			self:SetAbsorbColor(unpack(self.unlocked
+				and randomcolors[math.random(#randomcolors)]
+				or colors[class])
+			)
+		end
+		if config.hideownname and UnitGUID('player') == self.data.guid or config.hidename then 
+			name = ''
+		else
+			name = config.shortname and utf8sub(name, 8, true) or name
+			name = colornames[class]:format(name)
 		end
 		self.widgets.fontstrings.spellandname:SetFormattedText('%s%s', spell, name)
 		self:SetIcon()
