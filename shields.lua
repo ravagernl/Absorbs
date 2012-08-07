@@ -5,6 +5,7 @@ local tremove = tremove
 local tsort = table.sort
 local ipairs = ipairs
 local next = next
+local wipe = table.wipe
 ------------------------------------------------------------------------------
 local shields = {
 	-- Druid Stuff
@@ -115,11 +116,15 @@ function ns:UpdateMax(unit, guid, id, name, type, amount, removed)
 			return
 		end
 		-- Move the table from active to cache
+		tremove(active, index)
 		tinsert(cache, tbl)
-		active[index] = nil
 		activeShields[guid..'_'..id] = nil
+		
 	else
-		local tbl = tremove(cache) or {}
+		-- Get a table from the cache or a new table
+		local tbl = tremove(cache)
+		if tbl then wipe(tbl) else tbl = {} end
+
 		tbl.unit = unit
 		tbl.guid = guid
 		tbl.id = id
@@ -129,6 +134,7 @@ function ns:UpdateMax(unit, guid, id, name, type, amount, removed)
 		tbl.cur = tonumber(amount) or 0
 		tbl.maxChanged = true
 		tbl.curChanged = true
+
 		tinsert(active, tbl)
 		activeShields[guid..'_'..id] = tbl
 	end
