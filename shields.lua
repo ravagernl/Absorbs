@@ -24,6 +24,7 @@ local shields = {
 	-- Mage stuff
 	[11426] = true,	-- Ice Barrier
 	[543] = true,	-- Mage Ward
+	[1463] = true,	-- Mana Shield
 
 	-- non class
 	[96988] = true,	-- Stay of Execution (25800 damage)
@@ -56,6 +57,8 @@ ns.activeShields = activeShields
 ------------------------------------------------------------------------------
 do
 	local sortFunc = function(a,b)
+		-- Sometimes it doesn't give along a or b
+		if not a and b then return end
 		return a.max - a.cur < b.max - b.cur
 	end
 	function ns:SortShields()
