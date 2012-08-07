@@ -8,8 +8,8 @@ local config = {
 	tukuishadows = false,
 	tukuiskinning = true,
 	smoothbar = true,
-	scaletime = 15, -- For people that want timers that tick down evenly, set this to a duration (10 suggested)
-	timerheight = 10,
+	scaletime = false, -- For people that want timers that tick down evenly, set this to a duration (10 suggested)
+	timerheight = 4,
 	--texture = [[Interface\TargetingFrame\UI-StatusBar]],
 	texture = [[Interface\AddOns\]]..name..[[\media\tex]],
 	font = {
@@ -19,13 +19,14 @@ local config = {
 		decimals = 1,
 	},
 	timercolor = {0, 0, 0, .5},
-	barcolor = {.3, .6, .1},
-	barbgcolor = {.15, .3, .05},
-	classcolorbars = true,
+	barcolor = {.5, .5, .5},
+	barbgcolor = {.25, .25, .25},
+	classcolorbars = false,
 	shortspell = true,
 	shortname = true,
 	hidespell = false,
 	hidename = false,
+	hideownname = false
 }
 ns.config = config
 ns:Debug('Config set.')
