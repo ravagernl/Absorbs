@@ -56,7 +56,7 @@ local function GUIDToUnitID(guid)
 end
 ------------------------------------------------------------------------------
 evtframe:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
-evtframe:SetScript("OnEvent", function(self, event, timestamp, type, hideCaster, srcGUID, srcName, sourceFlags, dstGUID, dstName, dstFlags, ...)
+evtframe:SetScript("OnEvent", function(self, event, timestamp, type, hideCaster, srcGUID, srcName, sourceFlags, sourceFlags2, dstGUID, dstName, dstFlags, dstFlags2, ...)
 	if dstGUID ~= UnitGUID('player') then
 		return
 	end
