@@ -518,7 +518,7 @@ function ns:UpdateAllBars()
 	for i = ns:GetNumShields() + 1, #activeBars do
 		local bar = activeBars[i]
 		bar:Delete()
-		activeBars[i] = nil
+		tremove(activeBars, i)
 	end
 end
 ------------------------------------------------------------------------------
@@ -592,7 +592,7 @@ SlashCmdList[name:upper()..'ADDON'] = function()
 		for i, bar in next, activeBars do
 			bar:SetLocked()
 			bar:Delete()
-			activeBars[i] = nil
+			tremove(activeBars, i)
 		end
 		-- Force updating the statusbar values
 		if ns:HasActiveShields() then
