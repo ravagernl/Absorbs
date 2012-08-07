@@ -90,7 +90,7 @@ end
 function ns:UpdateFromTooltipByGUID(guid, id, amount, icon, count, debuffType, duration, expirationTime)
 	local tbl = activeShields[guid..'_'..id]
 	if not tbl then return end
-	if amount > tbl.max then
+	if amount ~= tbl.max then
 		tbl.maxChanged = true
 		tbl.max = 0 + amount
 	end
@@ -135,6 +135,4 @@ function ns:UpdateMax(guid, id, name, type, amount, removed)
 		tinsert(active, tbl)
 		activeShields[guid..'_'..id] = tbl
 	end
-	ns:UpdateFromTooltips()
-	ns:UpdateAllBars()
 end

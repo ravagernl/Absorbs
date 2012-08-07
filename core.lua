@@ -63,6 +63,7 @@ evtframe:SetScript("OnEvent", function(self, event, timestamp, type, hideCaster,
 	end
 
 	local hasshields = ns:HasActiveShields()
+	local update
 	-- Aura applied or removed
 	if type == 'SPELL_AURA_APPLIED' or
 		hasshields and (
@@ -80,6 +81,7 @@ evtframe:SetScript("OnEvent", function(self, event, timestamp, type, hideCaster,
 		else
 			ns:UpdateMax(srcGUID, id, name, spelltype, amount)
 		end
+		update = true
 	-- Do not proceed if there are no shields active
 	-- This is to prevent tracking of absorbed damage via soul link (warlocks)
 	-- and other shields that absorb a percentage of health
@@ -89,8 +91,7 @@ evtframe:SetScript("OnEvent", function(self, event, timestamp, type, hideCaster,
 		if type == "SWING_DAMAGE" then
 			local _, _, _, _, _, absorbed = ...
 			if not absorbed then return end
-			ns:UpdateFromTooltips()
-			ns:UpdateAllBars()
+			update = true
 		-- "Spell" partial absorb
 		elseif type == "RANGE_DAMAGE" 
 			or type == "SPELL_DAMAGE" 
@@ -98,14 +99,12 @@ evtframe:SetScript("OnEvent", function(self, event, timestamp, type, hideCaster,
 		then
 			local _, _, _, _, _, _, _, _, absorbed = ...
 			if not absorbed then return end
-			ns:UpdateFromTooltips()
-			ns:UpdateAllBars()
+			update = true
 		-- "Melee" full absorb
 		elseif type == "SWING_MISSED"  then
 			local missType = ...
 			if missType ~= "ABSORB"  then return end
-			ns:UpdateFromTooltips()
-			ns:UpdateAllBars()
+			update = true
 		-- "Spell" full absorb
 		elseif type == "RANGE_MISSED" 
 			or type == "SPELL_MISSED" 
@@ -113,10 +112,13 @@ evtframe:SetScript("OnEvent", function(self, event, timestamp, type, hideCaster,
 		then
 			local _, _, _, missType = ...
 			if missType ~= "ABSORB" then return end
-			ns:UpdateFromTooltips()
-			ns:UpdateAllBars()
+			update = true
 		end
 	end
+	
+	if not update then return end
+	ns:UpdateFromTooltips()
+	ns:UpdateAllBars()
 end)
 
 _G[name..'AddOn'] = ns
