@@ -76,9 +76,9 @@ evtframe:SetScript("OnEvent", function(self, event, timestamp, type, hideCaster,
 		-- make sure we want to track the aura
 		if not unit or not ns:IsTrackableShield(id) then return end
 		if type == 'SPELL_AURA_REMOVED' then
-			ns:UpdateMax(unit, srcGUID, id, name, spelltype, amount, true)
+			ns:UpdateMax(srcGUID, id, name, spelltype, amount, true)
 		else
-			ns:UpdateMax(unit, srcGUID, id, name, spelltype, amount)
+			ns:UpdateMax(srcGUID, id, name, spelltype, amount)
 		end
 	-- Do not proceed if there are no shields active
 	-- This is to prevent tracking of absorbed damage via soul link (warlocks)

@@ -108,8 +108,7 @@ function ns:UpdateFromTooltipByGUID(guid, id, amount, icon, count, debuffType, d
 	end
 end
 
-function ns:UpdateMax(unit, guid, id, name, type, amount, removed)
-	--self:Debugf('UpdateMax: %q, %q, %q, %q, %q, %q, %q', unit, guid, id, name, type, amount or 0, removed and 'removed' or 'applied or refreshed')
+function ns:UpdateMax(guid, id, name, type, amount, removed)
 	if removed then
 		local index, tbl = self:FindActiveShieldIndexFromGUID(guid, id)
 		if not index then

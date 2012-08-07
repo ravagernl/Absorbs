@@ -10,6 +10,7 @@ local GetTime = GetTime
 local unpack = unpack
 local tinsert, tremove, wipe, next, floor = tinsert, tremove, wipe, next, math.floor
 local UnitClass, UnitName = UnitClass, UnitName
+local GetPlayerInfoByGUID = GetPlayerInfoByGUID
 ------------------------------------------------------------------------------
 -- Partially stolen from LibCandyBar-3.0 and LibBars-1.0 :)
 -- Thank you so much Ammo and Rabbit!
@@ -164,7 +165,6 @@ do
 	testObject = {
 		name = name,
 		icon = icon,
-		unit = 'player', 
 		guid = UnitGUID('player'), 
 		type = 'BUFF', 
 		max = math.random(11000,40000),
@@ -232,10 +232,8 @@ do
 	end
 	function barPrototype:SetSpellAndName()
 		local spell = config.hidespell and '' or config.shortspell and shortName(self.data.name) or self.data.name
-		local name = ''
-		local unit = self.data.unit
-		if unit and unit ~= '' and not config.hidename then
-			local _, class = UnitClass(unit)
+		local _, class, _, _, _, name, realm = GetPlayerInfoByGUID(self.data.guid)
+		if class and not config.hidename then
 			local color
 			if self.unlocked then
 				color = randomcolors[math.random(#randomcolors)]
@@ -245,8 +243,8 @@ do
 			if config.classcolorbars then
 				self:SetAbsorbColor(unpack(color))
 			end
-			if unit ~= 'player' then
-				name = config.shortname and utf8sub(UnitName(unit), 8, true) or UnitName(unit)
+			if UnitGUID('player') ~= self.data.guid then
+				name = config.shortname and utf8sub(name, 8, true) or name
 				name = colornames[class]:format(name)
 			end
 		end
