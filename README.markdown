@@ -1,1 +1,4 @@
-Description of this addon will come in the future.
+Absorbs
+=======
+A World of Warcraft Addon for absorb effects on the player
+----------------------------------------------------------

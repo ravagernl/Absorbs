@@ -1,8 +1,8 @@
-## Interface: 40100
+## Interface: 40300
 ## Title: Absorbs
 ## Notes: Simple absorb effect monitor
 ## Author: mrruben5
-## Version: 0.7
+## Version: 0.8
 ## OptionalDeps: tekDebug, Tukui, ElvUI, !ClassColors
 
 debug.lua
