@@ -1,5 +1,6 @@
 local name, ns = ...
 local widgets = ns.widgets or {}
+_G[name] = ns -- expose
 ------------------------------------------------------------------------------
 local unpack = unpack
 local format = format
