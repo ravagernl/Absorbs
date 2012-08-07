@@ -131,7 +131,7 @@ local function SetFontString(parent, fontName, fontHeight)
 	fs:SetFont(fontName, fontHeight, fontStyle)
 	fs:SetShadowColor(0, 0, 0, 0)
 	fs:SetShadowOffset(0, 0)
-	ns:Debug(parent:GetName(), 'SetFontString', fontName, fontHeight, fontStyle)
+	--ns:Debug(parent:GetName(), 'SetFontString', fontName, fontHeight, fontStyle)
 	return fs
 end
 local backdrop = {
@@ -272,13 +272,13 @@ do
 	function barPrototype:SetIcon()
 		self.widgets.textures.icon:SetTexture(self.data.icon)
 		if config.showicon and self.widgets.textures.icon:GetTexture() then
-			ns:Debug(self:GetID(), 'SetIcon', '|cFF00FF00Icon visible!|', self.data.icon)
+			--ns:Debug(self:GetID(), 'SetIcon', '|cFF00FF00Icon visible!|', self.data.icon)
 			self.widgets.textures.icon:Show()
-		elseif config.showicon then
-			ns:Debug(self:GetID(), 'SetIcon', '|cFFFF0000Icon not set.|r', self:GetID())
-			self.widgets.textures.icon:Hide()
+		--elseif config.showicon then
+			--ns:Debug(self:GetID(), 'SetIcon', '|cFFFF0000Icon not set.|r', self:GetID())
+			--self.widgets.textures.icon:Hide()
 		else
-			ns:Debug(self:GetID(), 'SetIcon', '|cFFFF0000Icons are disabled.|r', self.data.icon)
+			--ns:Debug(self:GetID(), 'SetIcon', '|cFFFF0000Icons are disabled.|r', self.data.icon)
 			self.widgets.textures.icon:Hide()
 		end
 		self:UpdateHeight()
